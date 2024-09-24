@@ -8,7 +8,7 @@
 - Studentennummer: 202396545
 - E-mailadres: <mailto:jasper.degeest@student.hogent.be>
 - Demo: <DEMO_LINK_HIER>
-- GitHub-repository: <GITHUB_REPO_LINK_HIER>
+- GitHub-repository: <https://github.com/HOGENT-frontendweb/frontendweb-2425-JasperDeGeest>
 - Front-end Web Development
   - Online versie: <LINK_ONLINE_VERSIE_HIER>
 - Web Services:
