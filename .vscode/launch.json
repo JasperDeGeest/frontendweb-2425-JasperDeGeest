@@ -11,6 +11,16 @@
       "runtimeExecutable": "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Attach to server",
+      "address": "localhost",
+      "port": 9001,
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "restart": true,
+      "timeout": 10000
     }
   ]
 }
