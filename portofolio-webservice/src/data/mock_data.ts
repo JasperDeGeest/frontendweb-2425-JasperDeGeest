@@ -32,3 +32,60 @@ export const AANDELEN = [
   },
 
 ];
+
+export const ACCOUNTS = [
+  {
+    id: 1,
+    email: 'test@test1.com',
+    hashedPassword: 'fjqlsdfm',
+    onbelegdVermogen: 250,
+    rijksregisterNummer: 123456789,
+    voornaam: 'Thomas',
+    achternaam: 'De Muur',
+    adresId: 1,
+  },
+  {
+    id: 2,
+    email: 'test@test2.com',
+    hashedPassword: 'qdfsfqsd',
+    onbelegdVermogen: 300,
+    rijksregisterNummer: 95514614,
+    voornaam: 'Jonas',
+    achternaam: 'De Bruin',
+    adresId: 2,
+  },
+  {
+    id: 3,
+    email: 'test@test3.com',
+    hashedPassword: 'erztaatr',
+    onbelegdVermogen: 8960,
+    rijksregisterNummer: 74844646,
+    voornaam: 'Tom',
+    achternaam: 'De Man',
+    adresId: 3,
+  },
+];
+
+export const ADRESSES = [
+  {
+    id: 1,
+    straat: 'Plezanstraat',
+    huisNummer: 3,
+    stad: 'Gent',
+    land: 'België',
+  },
+  {
+    id: 2,
+    straat: 'Groenlaan',
+    huisNummer: 95,
+    stad: 'Antwerpen',
+    land: 'België',
+  },
+  {
+    id: 3,
+    straat: 'Koekendreef',
+    huisNummer: 105,
+    stad: 'Hasselt',
+    land: 'België',
+  },
+];

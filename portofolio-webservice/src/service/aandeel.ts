@@ -30,6 +30,7 @@ export const updateById = (id: number, { isin, afkorting, uitgever, kosten, type
 
   const updatedAandeel = {
     ...AANDELEN[index],
+    id,
     isin,
     afkorting,
     uitgever,
