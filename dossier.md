@@ -32,6 +32,45 @@
 
 > Omschrijf hier duidelijk waarover jouw project gaat. Voeg een domeinmodel (of EERD) toe om jouw entiteiten te verduidelijken.
 
+[Adres]
+*id
+straat
+huisNummer
+stad
+land
+
+[Account]
+*id
+email
+hashedPassword
+onbelegdVermogen
+rijksregisterNummer
+voornaam
+achternaam
++adresId
+
+[AccountAandeel]
+*+accountId
+*+aandeelId
+aantal
+aakoopPrijs
+reden
+geschatteDuur
+
+[Aandeel]
+*id
+ISIN
+afkorting
+uitgever
+kosten
+type
+rating
+sustainability
+
+Adres 1--* Account
+Account 1--* AccountAandeel
+Aandeel 1--* AccountAandeel
+
 ## Screenshots
 
 > Voeg enkele (nuttige!) screenshots toe die tonen wat de app doet.
@@ -43,10 +82,19 @@
 > Dit is weinig zinvol indien je enkel Front-end Web Development volgt, verwijder dan deze sectie.
 > Indien je als extra Swagger koos, dan voeg je hier een link toe naar jouw online documentatie. Swagger geeft nl. exact (en nog veel meer) wat je hieronder moet schrijven.
 
-### Gebruikers
+### Accounts
 
-- `GET /api/users`: alle gebruikers ophalen
-- `GET /api/users/:id`: gebruiker met een bepaald id ophalen
+- `GET /api/accounts/me`: een gebruiker moet zijn eigen account kunnen zien
+- `GET /api/accounts/me/adres`: een gebruiker moet zijn eigen adres kunnen zien
+- `PUT /api/accounts/me` een gebruiker moet zijn eigen account kunnen aanpassen
+
+### Aandelen
+
+- `GET /api/aandelen`: alle aandelen ophalen
+- `GET /api/aandelen/:id`: aandeel met bepaald id ophalen
+- `PUT /api/aandelen/:id`: aandeel met bepaald id aanpassen
+- `DELETE /api/aandelen/:id`: aandeel met bepaald id verwijderen
+- `POST /api/aandelen`  een aandeel toevoegen
 
 ## Behaalde minimumvereisten
 
