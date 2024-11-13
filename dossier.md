@@ -86,7 +86,8 @@ Aandeel 1--* AccountAandeel
 
 - `GET /api/accounts/me`: een gebruiker moet zijn eigen account kunnen zien
 - `GET /api/accounts/me/adres`: een gebruiker moet zijn eigen adres kunnen zien
-- `PUT /api/accounts/me` een gebruiker moet zijn eigen account kunnen aanpassen
+- `PUT /api/accounts/me` een gebruiker moet zijn eigen account en adress kunnen aanpassen
+- `CREATE /api/accounts` een gebruiker moet een account kunnen maken
 
 ### Aandelen
 
