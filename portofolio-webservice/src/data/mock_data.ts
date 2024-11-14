@@ -89,3 +89,30 @@ export const ADRESSES = [
     land: 'België',
   },
 ];
+
+export const ACCOUNTAANDELEN = [
+  {
+    accountId: 1,
+    aandeelId: 1,
+    aantal: 5,
+    aankoopPrijs: 20,
+    reden: 'ik denk dat dit goed is.',
+    geschatteDuur: '5 jaar',
+  },
+  {
+    accountId: 1,
+    aandeelId: 2,
+    aantal: 2,
+    aankoopPrijs: 150,
+    reden: 'ik wil het lang bijhouden.',
+    geschatteDuur: '40 jaar',
+  },
+  {
+    accountId: 2,
+    aandeelId: 3,
+    aantal: 1,
+    aankoopPrijs: 3500,
+    reden: 'goede investering.',
+    geschatteDuur: '25 jaar',
+  },
+];

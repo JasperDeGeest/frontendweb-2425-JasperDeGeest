@@ -19,6 +19,10 @@ const updateAccount = async (ctx: Context) => {
   });
 };
 
+const getAandelenByAccountId = async (ctx: Context) => {
+  ctx.body = accountService.getAandelenByAccountId(Number(ctx.params.accountId));
+};
+
 export default (parent: Router) => {
   const router = new Router({
     prefix: '/accounts',
@@ -27,6 +31,7 @@ export default (parent: Router) => {
   router.post('/', createAccount);
   router.get('/:id', getAccountById);
   router.put('/:id', updateAccount);
+  router.get('/:accountId/aandelen', getAandelenByAccountId);
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

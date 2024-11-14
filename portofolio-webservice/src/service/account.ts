@@ -1,4 +1,4 @@
-import { ACCOUNTS, ADRESSES} from '../data/mock_data';
+import { ACCOUNTS, ADRESSES, ACCOUNTAANDELEN} from '../data/mock_data';
 export const getById = (id: number) => {
   const account = ACCOUNTS.find((a) => a.id === id);
   return  { ...account, ...ADRESSES.find((a) => a.id === account?.adresId)};
@@ -60,4 +60,8 @@ export const create = (
   ACCOUNTS.push(newAccount);
   ADRESSES.push(newAdress);
   return {...newAccount,...ADRESSES};
+};
+
+export const getAandelenByAccountId = (accountId: number) => {
+  return ACCOUNTAANDELEN.filter((a) => a.accountId === accountId);
 };
