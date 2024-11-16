@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Adres {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  straat     String   @db.VarChar(255)
+  huisNummer String   @db.VarChar(50)
+  stad       String   @db.VarChar(100)
+  land       String   @db.VarChar(100)
+  accounts   Account[]
+}
+
+model Account {
+  id                    Int       @id @default(autoincrement()) @db.UnsignedInt
+  email                 String    @unique @db.VarChar(255)
+  hashedPassword        String    @db.VarChar(255)
+  onbelegdVermogen      Float     @db.Float
+  rijksregisterNummer   String    @db.VarChar(20)
+  voornaam              String    @db.VarChar(100)
+  achternaam            String    @db.VarChar(100)
+  adresId               Int       @db.UnsignedInt
+  adres                 Adres     @relation(fields: [adresId], references: [id])
+  accountAandelen       AccountAandeel[]
+}
+
+model Aandeel {
+  id                Int       @id @default(autoincrement()) @db.UnsignedInt
+  ISIN              String    @unique @db.VarChar(20)
+  afkorting         String    @db.VarChar(20)
+  uitgever          String    @db.VarChar(100)
+  Kosten            Float     @db.Float
+  type              String    @db.VarChar(50)
+  Rating            Int       @db.UnsignedTinyInt
+  Sustainability    Int       @db.UnsignedTinyInt
+  accountAandelen   AccountAandeel[]
+}
+
+model AccountAandeel {
+  accountId       Int       @db.UnsignedInt
+  aandeelId       Int       @db.UnsignedInt
+  aantal          Int       @db.UnsignedInt
+  aakoopPrijs     Float     @db.Float
+  reden           String    @db.VarChar(255)
+  geschatteDuur   Int       @db.UnsignedInt
+
+  account     Account  @relation(fields: [accountId], references: [id])
+  aandeel     Aandeel  @relation(fields: [aandeelId], references: [id])
+
+  @@id([accountId, aandeelId])
+}
