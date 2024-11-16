@@ -1,67 +1,101 @@
-import { ACCOUNTS, ADRESSES, ACCOUNTAANDELEN} from '../data/mock_data';
-export const getById = (id: number) => {
-  const account = ACCOUNTS.find((a) => a.id === id);
-  return  { ...account, ...ADRESSES.find((a) => a.id === account?.adresId)};
+import { prisma } from '../data';
+
+export const getById = async (id: number) => {
+  const account = await prisma.account.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      adres: {
+        select: {
+          id: false,
+          straat: true,
+          huisNummer: true,
+          stad: true,
+          land: true,
+        },
+      },
+    },
+  });
+
+  if(!account) {
+    throw new Error('No account with this id exist');
+  }
+
+  return account;
 };
 
-export const updateById = (id: number, 
+export const updateById = async (id: number, 
   { email, hashedPassword, onbelegdVermogen, rijksregisterNummer, 
     voornaam, achternaam, adresId, 
     straat, huisNummer, stad, land}: any) => {
-  const index = ACCOUNTS.findIndex((a) => a.id === id);
-  const indexAdres = ADRESSES.findIndex((a) => a.id === ACCOUNTS[index]?.adresId);
-
-  const updatedAccount = {
-    ...ACCOUNTS[index],
-    id,
-    email,
-    hashedPassword,
-    onbelegdVermogen,
-    rijksregisterNummer,
-    voornaam,
-    achternaam,
-    adresId,
-  };
-  const updatedAdress = {
-    ...ADRESSES[indexAdres],
-    id: adresId,
-    straat,
-    huisNummer,
-    stad,
-    land,
-  };
-  ACCOUNTS[index] = updatedAccount;
-  ADRESSES[indexAdres] = updatedAdress;
-  return {...updatedAccount, ...updatedAdress};
+  const updatedAdres = await prisma.adres.upsert({
+    where: { id: adresId },
+    update: {
+      straat,
+      huisNummer,
+      stad,
+      land,
+    },
+    create: {
+      id: adresId,
+      straat,
+      huisNummer,
+      stad,
+      land,
+    },
+  });
+  
+  const updatedAccount = await prisma.account.update({
+    where: { id },
+    data: {
+      email,
+      hashedPassword,
+      onbelegdVermogen,
+      rijksregisterNummer,
+      voornaam,
+      achternaam,
+      adresId,
+    },
+  });
+  
+  return { ...updatedAccount, adres: updatedAdres };
 };
 
-export const create = (
+export const create = async (
   { email, hashedPassword, onbelegdVermogen, rijksregisterNummer, voornaam, achternaam, 
     straat, huisNummer, stad, land}: any) => {
-  const maxId = Math.max(...ACCOUNTS.map((i) => i.id));
-  const maxIdAdress = Math.max(...ADRESSES.map((i) => i.id));
-  const newAccount = {
-    id: maxId +1,
-    email,
-    hashedPassword,
-    onbelegdVermogen,
-    rijksregisterNummer,
-    voornaam,
-    achternaam,
-    adresId: maxIdAdress +1,
-  };
-  const newAdress = {
-    id: maxIdAdress +1,
-    straat,
-    huisNummer,
-    stad,
-    land,
-  };
-  ACCOUNTS.push(newAccount);
-  ADRESSES.push(newAdress);
-  return {...newAccount,...ADRESSES};
+  const newAdres = await prisma.adres.create({
+    data: {
+      straat,
+      huisNummer,
+      stad,
+      land,
+    },
+  });
+  
+  const newAccount = await prisma.account.create({
+    data: {
+      email,
+      hashedPassword,
+      onbelegdVermogen,
+      rijksregisterNummer,
+      voornaam,
+      achternaam,
+      adresId: newAdres.id,
+    },
+  });
+
+  return { ...newAccount, adres: newAdres };
 };
 
-export const getAandelenByAccountId = (accountId: number) => {
-  return ACCOUNTAANDELEN.filter((a) => a.accountId === accountId);
+export const getAandelenByAccountId = async (accountId: number) => {
+  const accountAandelen = await prisma.accountAandeel.findMany({
+    where: { accountId },
+  });
+
+  if(accountAandelen.length < 1) {
+    throw new Error('this account has no aandelen.');
+  }
+  return accountAandelen;
 };

@@ -3,24 +3,34 @@ import * as accountService from '../service/account';
 import type { Context } from 'koa';
 
 const getAccountById = async (ctx: Context) => {
-  ctx.body = accountService.getById(Number(ctx.params.id));
+  try {
+    ctx.body = await accountService.getById(Number(ctx.params.id));
+  } catch (error: any) {
+    ctx.status = 404;
+    ctx.body = error.message;
+  }
 };
 
 const createAccount = async (ctx: Context) => {
-  const newAandeel = accountService.create({
+  const newAccount = await accountService.create({
     ...ctx.request.body,
   });
-  ctx.body = newAandeel;
+  ctx.body = newAccount;
 };
 
 const updateAccount = async (ctx: Context) => {
-  ctx.body = accountService.updateById(Number(ctx.params.id), {
+  ctx.body = await accountService.updateById(Number(ctx.params.id), {
     ...ctx.request.body,
   });
 };
 
 const getAandelenByAccountId = async (ctx: Context) => {
-  ctx.body = accountService.getAandelenByAccountId(Number(ctx.params.accountId));
+  try {
+    ctx.body = await accountService.getAandelenByAccountId(Number(ctx.params.accountId));
+  } catch (error: any) {
+    ctx.body = error.message;
+    ctx.status = 404;
+  }
 };
 
 export default (parent: Router) => {

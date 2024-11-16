@@ -1,49 +1,67 @@
-// src/service/aandeel.ts
-import { AANDELEN } from '../data/mock_data';
+import { prisma } from '../data';
 
-export const getAll = () => {
-  return AANDELEN;
+export const getAll = async () => {
+  return prisma.aandeel.findMany();
 };
 
-export const getById = (id: number) => {
-  return AANDELEN.find((a) => a.id === id);
+export const getById = async (id: number) => {
+  const aandeel = await prisma.aandeel.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!aandeel) {
+    throw new Error('No aandeel with this id exists');
+  }
+
+  return aandeel;
 };
 
-export const create = ({ isin, afkorting, uitgever, kosten, type, rating, sustainability}: any) => {
-  const maxId = Math.max(...AANDELEN.map((i) => i.id));
-  const newAandeel = {
-    id: maxId +1,
-    isin,
-    afkorting,
-    uitgever,
-    kosten,
-    type,
-    rating,
-    sustainability,
-  };
-  AANDELEN.push(newAandeel); // 👈 4
-  return newAandeel; // 👈 5
+export const create = async ({ isin, afkorting, uitgever, kosten, type, rating, sustainability}: any) => {
+  return prisma.aandeel.create({
+    data: {
+      isin,
+      afkorting,
+      uitgever,
+      kosten,
+      type,
+      rating,
+      sustainability,
+    },
+  });
 };
 
-export const updateById = (id: number, { isin, afkorting, uitgever, kosten, type, rating, sustainability}: any) => {
-  const index = AANDELEN.findIndex((a) => a.id === id);
-
-  const updatedAandeel = {
-    ...AANDELEN[index],
-    id,
-    isin,
-    afkorting,
-    uitgever,
-    kosten,
-    type,
-    rating,
-    sustainability,
-  };
-  AANDELEN[index] = updatedAandeel;
-  return updatedAandeel;
+export const updateById = async (id: number, 
+  { isin, afkorting, uitgever, kosten, type, rating, sustainability}: any) => {
+  return prisma.aandeel.update({
+    where: {
+      id,
+    },
+    data: {
+      isin,
+      afkorting,
+      uitgever,
+      kosten,
+      type,
+      rating,
+      sustainability,
+    },
+  });
 };
 
-export const deleteById = (id: number) => {
-  const index = AANDELEN.findIndex((t) => t.id === id);
-  AANDELEN.splice(index, 1);
+export const deleteById = async (id: number) => {
+  const relatedAccountAandelen = await prisma.accountAandeel.findMany({
+    where: { aandeelId: id },
+  });
+
+  if(relatedAccountAandelen.length > 0) {
+    throw new Error('cannot delete this aandeel because people own it.');
+  }
+  
+  await prisma.aandeel.delete({
+    where: {
+      id,
+    },
+  });
 };

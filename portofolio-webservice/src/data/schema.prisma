@@ -55,8 +55,8 @@ model AccountAandeel {
   reden           String    @db.VarChar(255)
   geschatteDuur   String    @db.VarChar(255)
 
-  account     Account  @relation(fields: [accountId], references: [id])
-  aandeel     Aandeel  @relation(fields: [aandeelId], references: [id])
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_accountAandeel_account")
+  aandeel     Aandeel  @relation(fields: [aandeelId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_accountAandeel_aandeel")
 
   @@id([accountId, aandeelId])
 }
