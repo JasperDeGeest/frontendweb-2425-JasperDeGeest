@@ -27,23 +27,23 @@ model Account {
   email                 String    @unique @db.VarChar(255)
   hashedPassword        String    @db.VarChar(255)
   onbelegdVermogen      Float     @db.Float
-  rijksregisterNummer   String    @db.VarChar(20)
+  rijksregisterNummer   Int       @db.UnsignedInt
   voornaam              String    @db.VarChar(100)
   achternaam            String    @db.VarChar(100)
   adresId               Int       @db.UnsignedInt
-  adres                 Adres     @relation(fields: [adresId], references: [id])
+  adres                 Adres     @relation(fields: [adresId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_account_adres")
   accountAandelen       AccountAandeel[]
 }
 
 model Aandeel {
   id                Int       @id @default(autoincrement()) @db.UnsignedInt
-  ISIN              String    @unique @db.VarChar(20)
+  isin              String    @unique @db.VarChar(20)
   afkorting         String    @db.VarChar(20)
   uitgever          String    @db.VarChar(100)
-  Kosten            Float     @db.Float
+  kosten            Float     @db.Float
   type              String    @db.VarChar(50)
-  Rating            Int       @db.UnsignedTinyInt
-  Sustainability    Int       @db.UnsignedTinyInt
+  rating            Int       @db.UnsignedTinyInt
+  sustainability    Int       @db.UnsignedTinyInt
   accountAandelen   AccountAandeel[]
 }
 
@@ -51,9 +51,9 @@ model AccountAandeel {
   accountId       Int       @db.UnsignedInt
   aandeelId       Int       @db.UnsignedInt
   aantal          Int       @db.UnsignedInt
-  aakoopPrijs     Float     @db.Float
+  aankoopPrijs     Float     @db.Float
   reden           String    @db.VarChar(255)
-  geschatteDuur   Int       @db.UnsignedInt
+  geschatteDuur   String    @db.VarChar(255)
 
   account     Account  @relation(fields: [accountId], references: [id])
   aandeel     Aandeel  @relation(fields: [aandeelId], references: [id])
