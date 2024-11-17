@@ -19,7 +19,6 @@ Ik verwacht dat volgende software reeds geïnstalleerd is:
 ## Front-end
 
 ## Opstarten
-
 > Schrijf hier hoe we de applicatie starten (.env bestanden aanmaken, commando's om uit te voeren...)
 
 ## Testen
@@ -29,7 +28,12 @@ Ik verwacht dat volgende software reeds geïnstalleerd is:
 ## Back-end
 
 ## Opstarten
-
+### Development
+- Enable Corepack: corepack enable
+- Install all dependencies: yarn install
+- Make sure a .env exists (see above)
+- Run the migrations: yarn prisma migrate dev --name init
+- Start the development server: yarn start:dev
 > Schrijf hier hoe we de applicatie starten (.env bestanden aanmaken, commando's om uit te voeren...)
 
 ## Testen
