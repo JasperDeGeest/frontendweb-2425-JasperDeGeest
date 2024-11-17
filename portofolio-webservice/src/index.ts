@@ -5,13 +5,13 @@ import installRest from './rest';
 import config from 'config';
 import koaCors from '@koa/cors';
 import { initializeData } from './data'; // 👈 1
+import type { PortofolioAppContext, PortofolioAppState } from './types/koa';
 
 const CORS_ORIGINS = config.get<string[]>('cors.origins'); // 👈 2
 const CORS_MAX_AGE = config.get<number>('cors.maxAge'); // 👈 2
 
-const app = new Koa();
-
 async function main(): Promise<void> {
+  const app = new Koa<PortofolioAppState, PortofolioAppContext>();
   app.use(
     koaCors({
       origin: (ctx) => {

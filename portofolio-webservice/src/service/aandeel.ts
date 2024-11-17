@@ -1,10 +1,11 @@
+import type { Aandeel, AandeelCreateInput, AandeelUpdateInput } from '../types/aandeel';
 import { prisma } from '../data';
 
-export const getAll = async () => {
+export const getAll = async (): Promise<Aandeel[]> => {
   return prisma.aandeel.findMany();
 };
 
-export const getById = async (id: number) => {
+export const getById = async (id: number): Promise<Aandeel> => {
   const aandeel = await prisma.aandeel.findUnique({
     where: {
       id,
@@ -18,39 +19,22 @@ export const getById = async (id: number) => {
   return aandeel;
 };
 
-export const create = async ({ isin, afkorting, uitgever, kosten, type, rating, sustainability}: any) => {
+export const create = async (aandeel: AandeelCreateInput): Promise<Aandeel> => {
   return prisma.aandeel.create({
-    data: {
-      isin,
-      afkorting,
-      uitgever,
-      kosten,
-      type,
-      rating,
-      sustainability,
-    },
+    data: aandeel,
   });
 };
 
-export const updateById = async (id: number, 
-  { isin, afkorting, uitgever, kosten, type, rating, sustainability}: any) => {
+export const updateById = async (id: number, changes: AandeelUpdateInput): Promise<Aandeel> => {
   return prisma.aandeel.update({
     where: {
       id,
     },
-    data: {
-      isin,
-      afkorting,
-      uitgever,
-      kosten,
-      type,
-      rating,
-      sustainability,
-    },
+    data: changes,
   });
 };
 
-export const deleteById = async (id: number) => {
+export const deleteById = async (id: number): Promise<void> => {
   const relatedAccountAandelen = await prisma.accountAandeel.findMany({
     where: { aandeelId: id },
   });

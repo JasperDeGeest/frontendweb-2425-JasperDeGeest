@@ -1,22 +1,32 @@
-import Router from '@koa/router';
 import * as aandeelService from '../service/aandeel';
-import type { Context } from 'koa';
+import type { PortofolioAppContext, PortofolioAppState } from '../types/koa';
+import type { KoaContext, KoaRouter } from '../types/koa';
+import type {
+  CreateAandeelRequest,
+  CreateAandeelResponse,
+  GetAllAandelenResponse,
+  GetAandeelByIdResponse,
+  UpdateAandeelRequest,
+  UpdateAandeelResponse,
+} from '../types/aandeel';
+import type { IdParams } from '../types/common';
+import Router from '@koa/router';
 
-const getAllAandelen = async (ctx: Context) => {
+const getAllAandelen = async (ctx: KoaContext<GetAllAandelenResponse>) => {
   const aandelen = await aandeelService.getAll();
   ctx.body = {
     items: aandelen,
   };
 };
 
-const createAandeel = async (ctx: Context) => {
+const createAandeel = async (ctx: KoaContext<CreateAandeelResponse, void, CreateAandeelRequest>) => {
   const newAandeel = await aandeelService.create({
     ...ctx.request.body,
   });
   ctx.body = newAandeel;
 };
 
-const getAandeelById = async (ctx: Context) => {
+const getAandeelById = async (ctx: KoaContext<GetAandeelByIdResponse, IdParams>) => {
   try {
     ctx.body = await aandeelService.getById(Number(ctx.params.id));
   } catch (error : any) {
@@ -25,13 +35,13 @@ const getAandeelById = async (ctx: Context) => {
   }
 };
 
-const updateAandeel = async (ctx: Context) => {
+const updateAandeel = async (ctx: KoaContext<UpdateAandeelResponse, IdParams, UpdateAandeelRequest>) => {
   ctx.body = await aandeelService.updateById(Number(ctx.params.id), {
     ...ctx.request.body,
   });
 };
 
-const deleteAandeel = async (ctx: Context) => {
+const deleteAandeel = async (ctx: KoaContext<void, IdParams>) => {
   try {
     await aandeelService.deleteById(Number(ctx.params.id));
     ctx.status = 204;
@@ -41,8 +51,8 @@ const deleteAandeel = async (ctx: Context) => {
   }
 };
 
-export default (parent: Router) => {
-  const router = new Router({
+export default (parent: KoaRouter) => {
+  const router = new Router<PortofolioAppState, PortofolioAppContext>({
     prefix: '/aandelen',
   });
 

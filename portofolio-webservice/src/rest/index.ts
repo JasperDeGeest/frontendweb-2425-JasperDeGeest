@@ -1,12 +1,16 @@
-import type Application from 'koa';
+import type {
+  PortofolioAppContext,
+  PortofolioAppState,
+  KoaApplication,
+} from '../types/koa';
 
 import Router from '@koa/router';
 import installAandeelRouter from './aandeel';
 import installHealthRouter from './health';
 import installAccountRouter from './account';
 
-export default (app: Application) => {
-  const router = new Router({
+export default (app: KoaApplication) => {
+  const router = new Router<PortofolioAppState, PortofolioAppContext>({
     prefix: '/api',
   });
 

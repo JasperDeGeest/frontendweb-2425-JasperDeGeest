@@ -1,6 +1,9 @@
+// src/rest/health.ts
 import Router from '@koa/router';
 import * as healthService from '../service/health';
 import type { Context } from 'koa';
+import type { PortofolioAppContext, PortofolioAppState } from '../types/koa';
+import type { KoaRouter } from '../types/koa';
 
 const ping = async (ctx: Context) => {
   ctx.status = 200;
@@ -12,8 +15,10 @@ const getVersion = async (ctx: Context) => {
   ctx.body = healthService.getVersion();
 };
 
-export default (parent: Router) => {
-  const router = new Router({ prefix: '/health' });
+export default (parent: KoaRouter) => {
+  const router = new Router<PortofolioAppState, PortofolioAppContext>({
+    prefix: '/health', 
+  });
 
   router.get('/ping', ping);
   router.get('/version', getVersion);

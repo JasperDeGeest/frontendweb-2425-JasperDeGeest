@@ -1,8 +1,20 @@
 import Router from '@koa/router';
 import * as accountService from '../service/account';
-import type { Context } from 'koa';
+import type { PortofolioAppContext, PortofolioAppState } from '../types/koa';
+import type { KoaContext, KoaRouter } from '../types/koa';
+import type {
+  CreateAccountRequest,
+  CreateAccountResponse,
+  GetAccountByIdResponse,
+  UpdateAccountRequest,
+  UpdateAccountResponse,
+} from '../types/account';
+import type {
+  GetAllAccountAandelenResponse,
+} from '../types/accountAandeel';
+import type { IdParams } from '../types/common';
 
-const getAccountById = async (ctx: Context) => {
+const getAccountById = async (ctx: KoaContext<GetAccountByIdResponse, IdParams>) => {
   try {
     ctx.body = await accountService.getById(Number(ctx.params.id));
   } catch (error: any) {
@@ -11,37 +23,41 @@ const getAccountById = async (ctx: Context) => {
   }
 };
 
-const createAccount = async (ctx: Context) => {
+const createAccount = async (ctx: KoaContext<CreateAccountResponse, void, CreateAccountRequest>) => {
   const newAccount = await accountService.create({
     ...ctx.request.body,
   });
   ctx.body = newAccount;
 };
 
-const updateAccount = async (ctx: Context) => {
+const updateAccount = async (ctx: KoaContext<UpdateAccountResponse, IdParams, UpdateAccountRequest>) => {
   ctx.body = await accountService.updateById(Number(ctx.params.id), {
     ...ctx.request.body,
   });
 };
 
-const getAandelenByAccountId = async (ctx: Context) => {
+const getAandelenByAccountId = async (ctx: KoaContext<GetAllAccountAandelenResponse, IdParams>) => {
   try {
-    ctx.body = await accountService.getAandelenByAccountId(Number(ctx.params.accountId));
+    const accountAandelen = await accountService.getAandelenByAccountId(Number(ctx.params.id));
+
+    ctx.body = {
+      items: accountAandelen,
+    };
   } catch (error: any) {
     ctx.body = error.message;
     ctx.status = 404;
   }
 };
 
-export default (parent: Router) => {
-  const router = new Router({
+export default (parent: KoaRouter) => {
+  const router = new Router<PortofolioAppState, PortofolioAppContext>({
     prefix: '/accounts',
   });
 
   router.post('/', createAccount);
   router.get('/:id', getAccountById);
   router.put('/:id', updateAccount);
-  router.get('/:accountId/aandelen', getAandelenByAccountId);
+  router.get('/:id/aandelen', getAandelenByAccountId);
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

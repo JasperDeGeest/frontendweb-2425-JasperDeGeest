@@ -1,6 +1,8 @@
+import type { Account, AccountCreateInput, AccountUpdateInput } from '../types/account';
 import { prisma } from '../data';
+import type { AccountAandeel } from '../types/accountAandeel';
 
-export const getById = async (id: number) => {
+export const getById = async (id: number): Promise<Account> => {
   const account = await prisma.account.findUnique({
     where: {
       id,
@@ -8,7 +10,7 @@ export const getById = async (id: number) => {
     include: {
       adres: {
         select: {
-          id: false,
+          id: true,
           straat: true,
           huisNummer: true,
           stad: true,
@@ -25,71 +27,60 @@ export const getById = async (id: number) => {
   return account;
 };
 
-export const updateById = async (id: number, 
-  { email, hashedPassword, onbelegdVermogen, rijksregisterNummer, 
-    voornaam, achternaam, adresId, 
-    straat, huisNummer, stad, land}: any) => {
-  const updatedAdres = await prisma.adres.upsert({
-    where: { id: adresId },
-    update: {
-      straat,
-      huisNummer,
-      stad,
-      land,
+export const updateById = async (id: number, changes: AccountUpdateInput): Promise<Account> => {
+  const updatedAdres = await prisma.adres.update({
+    where: {
+      id : changes.adres.id,
     },
-    create: {
-      id: adresId,
-      straat,
-      huisNummer,
-      stad,
-      land,
-    },
+    data: changes.adres,
   });
   
   const updatedAccount = await prisma.account.update({
-    where: { id },
+    where: { 
+      id,
+    },
     data: {
-      email,
-      hashedPassword,
-      onbelegdVermogen,
-      rijksregisterNummer,
-      voornaam,
-      achternaam,
-      adresId,
+      email: changes.email,
+      hashedPassword: changes.hashedPassword,
+      onbelegdVermogen: changes.onbelegdVermogen,
+      rijksregisterNummer: changes.rijksregisterNummer,
+      voornaam: changes.voornaam,
+      achternaam: changes.achternaam,
     },
   });
   
   return { ...updatedAccount, adres: updatedAdres };
 };
 
-export const create = async (
-  { email, hashedPassword, onbelegdVermogen, rijksregisterNummer, voornaam, achternaam, 
-    straat, huisNummer, stad, land}: any) => {
+export const create = async (account: AccountCreateInput): Promise<Account> => {
+  // Create the adres first
   const newAdres = await prisma.adres.create({
     data: {
-      straat,
-      huisNummer,
-      stad,
-      land,
-    },
-  });
-  
-  const newAccount = await prisma.account.create({
-    data: {
-      email,
-      hashedPassword,
-      onbelegdVermogen,
-      rijksregisterNummer,
-      voornaam,
-      achternaam,
-      adresId: newAdres.id,
+      straat: account.adres.straat,
+      huisNummer: account.adres.huisNummer,
+      stad: account.adres.stad,
+      land: account.adres.land,
     },
   });
 
+  // Now create the account and associate the new adres
+  const newAccount = await prisma.account.create({
+    data: {
+      email: account.email,
+      hashedPassword: account.hashedPassword,
+      onbelegdVermogen: account.onbelegdVermogen,
+      rijksregisterNummer: account.rijksregisterNummer,
+      voornaam: account.voornaam,
+      achternaam: account.achternaam,
+      adresId: newAdres.id, // Link the new adres to the account
+    },
+  });
+
+  // Return the created account, including the newly created adres
   return { ...newAccount, adres: newAdres };
 };
 
-export const getAandelenByAccountId = async (accountId: number) => {
+export const getAandelenByAccountId = async (accountId: number): Promise<AccountAandeel[]> => {
   const accountAandelen = await prisma.accountAandeel.findMany({
     where: { accountId },
   });
