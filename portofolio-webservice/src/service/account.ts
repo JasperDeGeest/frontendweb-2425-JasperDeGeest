@@ -55,17 +55,13 @@ export const updateById = async (id: number, changes: AccountUpdateInput): Promi
 export const create = async (account: AccountCreateInput): Promise<Account> => {
   // Create the adres first
   const newAdres = await prisma.adres.create({
-    data: {
-      straat: account.adres.straat,
-      huisNummer: account.adres.huisNummer,
-      stad: account.adres.stad,
-      land: account.adres.land,
-    },
+    data : account.adres,
   });
 
   // Now create the account and associate the new adres
   const newAccount = await prisma.account.create({
     data: {
+      id: account.id,
       email: account.email,
       hashedPassword: account.hashedPassword,
       onbelegdVermogen: account.onbelegdVermogen,
@@ -74,6 +70,7 @@ export const create = async (account: AccountCreateInput): Promise<Account> => {
       achternaam: account.achternaam,
       adresId: newAdres.id, // Link the new adres to the account
     },
+
   });
 
   // Return the created account, including the newly created adres

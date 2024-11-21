@@ -15,18 +15,19 @@ import type {
 import type { IdParams } from '../types/common';
 
 const getAccountById = async (ctx: KoaContext<GetAccountByIdResponse, IdParams>) => {
-  try {
-    ctx.body = await accountService.getById(Number(ctx.params.id));
-  } catch (error: any) {
+  //try {
+  ctx.body = await accountService.getById(Number(ctx.params.id));
+  /*} catch (error: any) {
     ctx.status = 404;
     ctx.body = error.message;
-  }
+  }*/
 };
 
 const createAccount = async (ctx: KoaContext<CreateAccountResponse, void, CreateAccountRequest>) => {
   const newAccount = await accountService.create({
     ...ctx.request.body,
   });
+  ctx.status = 201;
   ctx.body = newAccount;
 };
 
@@ -37,16 +38,16 @@ const updateAccount = async (ctx: KoaContext<UpdateAccountResponse, IdParams, Up
 };
 
 const getAandelenByAccountId = async (ctx: KoaContext<GetAllAccountAandelenResponse, IdParams>) => {
-  try {
-    const accountAandelen = await accountService.getAandelenByAccountId(Number(ctx.params.id));
+  //try {
+  const accountAandelen = await accountService.getAandelenByAccountId(Number(ctx.params.id));
 
-    ctx.body = {
-      items: accountAandelen,
-    };
-  } catch (error: any) {
+  ctx.body = {
+    items: accountAandelen,
+  };
+  /*} catch (error: any) {
     ctx.body = error.message;
     ctx.status = 404;
-  }
+  }*/
 };
 
 export default (parent: KoaRouter) => {

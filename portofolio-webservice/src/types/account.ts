@@ -12,6 +12,7 @@ export interface Account extends Entity {
 }
 
 export interface AccountCreateInput {
+  id: number;
   email: string;
   hashedPassword: string;
   onbelegdVermogen: number;
