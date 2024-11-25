@@ -20,6 +20,10 @@ Ik verwacht dat volgende software reeds geïnstalleerd is:
 
 ## Opstarten
 > Schrijf hier hoe we de applicatie starten (.env bestanden aanmaken, commando's om uit te voeren...)
+- git clone https://github.com/HOGENT-frontendweb/frontendweb-2425-JasperDeGeest.git
+- cd portofolio-frontend
+- yarn install
+- yarn dev
 
 ## Testen
 
@@ -29,13 +33,13 @@ Ik verwacht dat volgende software reeds geïnstalleerd is:
 
 ## Opstarten
 ### Development
+> Schrijf hier hoe we de applicatie starten (.env bestanden aanmaken, commando's om uit te voeren...)
+- git clone https://github.com/HOGENT-frontendweb/frontendweb-2425-JasperDeGeest.git
 - Enable Corepack: corepack enable
 - Install all dependencies: yarn install
 - Make sure a .env exists (see above)
 - Run the migrations: yarn prisma migrate dev --name init
 - Start the development server: yarn start:dev
-> Schrijf hier hoe we de applicatie starten (.env bestanden aanmaken, commando's om uit te voeren...)
-
 ## Testen
 
 > Schrijf hier hoe we de testen uitvoeren (.env bestanden aanmaken, commando's om uit te voeren...)
