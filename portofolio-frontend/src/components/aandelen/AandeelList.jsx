@@ -3,6 +3,7 @@ import AandelenTable from '../../components/aandelen/AandelenTable';
 import AsyncData from '../../components/AsyncData';
 import useSWR from 'swr';
 import { getAll } from '../../api';
+import { Link } from 'react-router-dom';
 
 export default function AandeelList() {
   const [text, setText] = useState('');
@@ -41,6 +42,9 @@ export default function AandeelList() {
         >
           Search
         </button>
+        <Link to='/aandelen/add' className='btn btn-primary ms-2'>
+          +
+        </Link>
       </div>
 
       <div className='mt-4'>

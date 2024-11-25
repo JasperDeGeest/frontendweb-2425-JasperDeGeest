@@ -20,6 +20,7 @@ function AandelenTable({ aandelen }) {
             <th>type</th>
             <th>rating</th>
             <th>sustainability</th>
+            <th>Edit</th>
           </tr>
         </thead>
         <tbody>

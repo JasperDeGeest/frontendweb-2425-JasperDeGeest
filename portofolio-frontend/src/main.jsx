@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound';
 import About, { Services, History, Location } from './pages/about/About.jsx';
 import { Navigate } from 'react-router-dom';
 import Layout from './pages/Layout.jsx';
+import AddOrEditAandeel from './pages/aandelen/AddOrEditAandelen.jsx';
 
 const router = createBrowserRouter([
   {
@@ -20,7 +21,20 @@ const router = createBrowserRouter([
       },
       {
         path: '/aandelen',
-        element: <AandeelList />,
+        children: [
+          {
+            index: true,
+            element: <AandeelList />,
+          },
+          {
+            path: 'add',
+            element: <AddOrEditAandeel />,
+          },
+          {
+            path: 'edit/:id',
+            element: <AddOrEditAandeel />,
+          },
+        ],
       },
       {
         path: '/accounts',
