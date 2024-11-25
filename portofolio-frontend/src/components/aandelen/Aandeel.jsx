@@ -1,4 +1,4 @@
-export default function Aandeel({ isin, afkorting, uitgever, kosten, type, rating, sustainability }) {
+function Aandeel({isin, afkorting, uitgever, kosten, type, rating, sustainability}) {
   return (
     <tr>
       <td>{isin}</td>
@@ -10,4 +10,6 @@ export default function Aandeel({ isin, afkorting, uitgever, kosten, type, ratin
       <td>{sustainability}</td>
     </tr>
   );
-}
+};
+
+export default Aandeel;

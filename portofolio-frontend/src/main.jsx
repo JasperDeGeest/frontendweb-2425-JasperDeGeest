@@ -26,6 +26,10 @@ const router = createBrowserRouter([
         path: '/accounts',
         element: <AccountList />,
       },
+      /*{
+        path: '/accounts/:accountId/aandelen',
+        element: <AccountAandeelList />,
+      },*/
       {
         path: 'about',
         element: <About />,
@@ -56,5 +60,6 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <RouterProvider router={router} />
+    {/* 👈 */}
   </StrictMode>,
 );

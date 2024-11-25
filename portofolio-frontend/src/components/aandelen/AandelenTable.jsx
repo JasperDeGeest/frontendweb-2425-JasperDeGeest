@@ -24,7 +24,9 @@ function AandelenTable({ aandelen }) {
         </thead>
         <tbody>
           {aandelen.map((aandeel) => (
-            <Aandeel key={aandeel.id} {...aandeel} />
+            <Aandeel 
+              key={aandeel.id}
+              {...aandeel} />
           ))}
         </tbody>
       </table>

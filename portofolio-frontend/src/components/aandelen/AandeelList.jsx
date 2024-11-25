@@ -1,17 +1,25 @@
 import { useState, useMemo } from 'react';
-import AandelenTable from './AandelenTable';
-import { AANDEEL_DATA } from '../../api/mock_data';
+import AandelenTable from '../../components/aandelen/AandelenTable';
+import AsyncData from '../../components/AsyncData';
+import useSWR from 'swr';
+import { getAll } from '../../api';
 
 export default function AandeelList() {
   const [text, setText] = useState('');
   const [search, setSearch] = useState('');
 
+  const {
+    data: aandelen = [],
+    isLoading,
+    error,
+  } = useSWR('aandelen', getAll);
+
   const filteredAandelen = useMemo(
     () =>
-      AANDEEL_DATA.filter((t) => {
+      aandelen.filter((t) => {
         return t.afkorting.toLowerCase().includes(search.toLowerCase());
       }),
-    [search],
+    [search, aandelen],
   );
 
   return (
@@ -36,7 +44,11 @@ export default function AandeelList() {
       </div>
 
       <div className='mt-4'>
-        <AandelenTable aandelen={filteredAandelen} />
+        <AsyncData loading={isLoading} error={error}>
+          <AandelenTable 
+            aandelen={filteredAandelen}       
+          />
+        </AsyncData>
       </div>
     </>
   );
