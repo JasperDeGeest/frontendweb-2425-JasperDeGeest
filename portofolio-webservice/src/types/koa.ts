@@ -2,9 +2,12 @@
 import type { ParameterizedContext } from 'koa';
 import type Application from 'koa';
 import type Router from '@koa/router';
+import type { SessionInfo } from './auth';
 
 // 👇 1
-export interface PortofolioAppState {}
+export interface PortofolioAppState {
+  session: SessionInfo;
+}
 
 // 👇 2
 export interface PortofolioAppContext<

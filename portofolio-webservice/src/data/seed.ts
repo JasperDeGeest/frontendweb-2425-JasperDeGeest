@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import { hashPassword } from '../core/password';
+import Role from '../core/roles'; // 👈
 
 const prisma = new PrismaClient();
 
@@ -76,37 +78,42 @@ async function main() {
 
   // Seed accounts
   // ==========
+  const passwordHash = await hashPassword('12345678');
+
   await prisma.account.createMany({
     data: [
       {
         id: 1,
-        email: 'test@test1.com',
-        hashedPassword: 'fjqlsdfm',
+        email: 'thomas.aelbrecht@hogent.be',
+        hashedPassword: passwordHash,
         onbelegdVermogen: 250,
         rijksregisterNummer: 123456789,
         voornaam: 'Thomas',
-        achternaam: 'De Muur',
+        achternaam: 'Aelbrecht',
         adresId: 1,
+        roles: JSON.stringify([Role.ADMIN, Role.USER]), // 👈
       },
       {
         id: 2,
-        email: 'test@test2.com',
-        hashedPassword: 'qdfsfqsd',
+        email: 'pieter.vanderhelst@hogent.be',
+        hashedPassword: passwordHash,
         onbelegdVermogen: 300,
         rijksregisterNummer: 95514614,
-        voornaam: 'Jonas',
-        achternaam: 'De Bruin',
+        voornaam: 'Pieter',
+        achternaam: 'Van Der Helst',
         adresId: 2,
+        roles: JSON.stringify([Role.USER]), // 👈
       },
       {
         id: 3,
-        email: 'test@test3.com',
-        hashedPassword: 'erztaatr',
+        email: 'karine.samyn@hogent.be',
+        hashedPassword: passwordHash,
         onbelegdVermogen: 8960,
         rijksregisterNummer: 74844646,
-        voornaam: 'Tom',
-        achternaam: 'De Man',
+        voornaam: 'Karine',
+        achternaam: 'Samyn',
         adresId: 3,
+        roles: JSON.stringify([Role.USER]), // 👈
       },
     ],
   });

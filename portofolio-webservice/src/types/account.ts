@@ -1,5 +1,6 @@
 import type { Entity } from './common';
 import type { Adres } from './adres';
+import type { Prisma } from '@prisma/client';
 
 export interface Account extends Entity {
   email: string;
@@ -9,12 +10,12 @@ export interface Account extends Entity {
   voornaam: string;
   achternaam: string;
   adres: Adres;
+  roles: Prisma.JsonValue;
 }
 
 export interface AccountCreateInput {
-  id: number;
   email: string;
-  hashedPassword: string;
+  Password: string;
   onbelegdVermogen: number;
   rijksregisterNummer: number;
   voornaam: string;
@@ -22,11 +23,34 @@ export interface AccountCreateInput {
   adres: Adres;
 }
 
-export interface AccountUpdateInput extends AccountCreateInput {}
+export interface PublicAccount extends Pick<Account, 'id' | 'email' | 'voornaam' | 'achternaam'> {}
 
-export interface CreateAccountRequest extends AccountCreateInput {}
-export interface UpdateAccountRequest extends AccountUpdateInput {}
+export interface AccountUpdateInput extends 
+  Pick<AccountCreateInput, 
+  'email' | 'onbelegdVermogen' | 'rijksregisterNummer' | 'voornaam' | 'achternaam' | 'adres'> {}
 
-export interface GetAccountByIdResponse extends Account {}
-export interface CreateAccountResponse extends GetAccountByIdResponse {}
+export interface RegisterAccountRequest {
+  email: string;
+  Password: string;
+  onbelegdVermogen: number;
+  rijksregisterNummer: number;
+  voornaam: string;
+  achternaam: string;
+  adres: Adres;
+}
+export interface UpdateAccountRequest extends 
+  Pick<RegisterAccountRequest, 
+  'email' | 'onbelegdVermogen' | 'rijksregisterNummer' | 'voornaam' | 'achternaam' | 'adres'> {}
+
+export interface GetAccountByIdResponse extends PublicAccount {}
+export interface RegisterAccountResponse extends GetAccountByIdResponse {}
 export interface UpdateAccountResponse extends GetAccountByIdResponse {}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+}

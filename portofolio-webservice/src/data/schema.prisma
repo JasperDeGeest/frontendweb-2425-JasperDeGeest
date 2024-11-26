@@ -24,7 +24,7 @@ model Adres {
 
 model Account {
   id                    Int       @id @default(autoincrement()) @db.UnsignedInt
-  email                 String    @unique @db.VarChar(255)
+  email                 String    @unique(map: "idx_user_email_unique") @db.VarChar(255)
   hashedPassword        String    @db.VarChar(255)
   onbelegdVermogen      Float     @db.Float
   rijksregisterNummer   Int       @db.UnsignedInt
@@ -32,6 +32,7 @@ model Account {
   achternaam            String    @db.VarChar(100)
   adresId               Int       @db.UnsignedInt
   adres                 Adres     @relation(fields: [adresId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_account_adres")
+  roles                 Json
   accountAandelen       AccountAandeel[]
 }
 
