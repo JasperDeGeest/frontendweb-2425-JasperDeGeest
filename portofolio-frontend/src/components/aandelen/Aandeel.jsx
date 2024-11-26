@@ -1,7 +1,17 @@
 import { IoPencilOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
+import { memo } from 'react'; // 👈
 
-function Aandeel({id, isin, afkorting, uitgever, kosten, type, rating, sustainability}) {
+const AandeelMemoized = memo(function Aandeel({
+  id, 
+  isin, 
+  afkorting, 
+  uitgever, 
+  kosten, 
+  type, 
+  rating, 
+  sustainability,
+}) {
   return (
     <tr>
       <td>{isin}</td>
@@ -16,6 +26,6 @@ function Aandeel({id, isin, afkorting, uitgever, kosten, type, rating, sustainab
       </Link></td>
     </tr>
   );
-};
+});
 
-export default Aandeel;
+export default AandeelMemoized;

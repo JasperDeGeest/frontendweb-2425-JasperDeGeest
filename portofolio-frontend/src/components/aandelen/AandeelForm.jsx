@@ -1,15 +1,18 @@
 // src/components/transactions/AandeelForm.jsx
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useNavigate, Link } from 'react-router-dom';
+import LabelInput from '../LabelInput';
+import SelectList from '../SelectList';
 
 const validationRules = {
   id: {
-    required: 'User is required',
+    required: 'id is required',
     min: { value: 1, message: 'min 1' },
   },
   isin: {
     pattern: {
-      value: /^\d{12}$/,
-      message: 'ISIN must be 12 digits',
+      value: /^[A-Za-z0-9]{12}$/,
+      message: 'ISIN must be 12 numbers or characters',
     },
   },
   type: {
@@ -18,8 +21,8 @@ const validationRules = {
   },
   afkorting: {
     pattern: {
-      value: /^\d{4}$/,
-      message: 'Afkorting must be 4 digits',
+      value: /^[A-Z]{4}$/,
+      message: 'Afkorting must be 4 characters',
     },
   },
   kosten: {
@@ -37,19 +40,20 @@ const validationRules = {
 };
 
 const EMPTY_AANDEEL = {
-  id: '',
+  id: undefined,
   isin: '',
   afkorting: '',
   uitgever: '',
-  kosten: '',
+  kosten: undefined,
   type: '',
-  rating: '',
-  sustainability: '',
+  rating: undefined,
+  sustainability: undefined,
 };
 
-export default function AandeelForm(saveAandeel) {
-  const aandeel = EMPTY_AANDEEL;
-  const { register, handleSubmit, formState: { errors, isValid }, reset } = useForm({
+export default function AandeelForm({ aandeel = EMPTY_AANDEEL, saveAandeel }) {
+  const navigate = useNavigate();
+
+  const methods = useForm({
     mode: 'onBlur',
     defaultValues: {
       id: aandeel?.id,
@@ -63,139 +67,94 @@ export default function AandeelForm(saveAandeel) {
     },
   });
 
+  const {
+    handleSubmit,
+    formState: { isSubmitting, isValid },
+  } = methods;
+
   const onSubmit = async (values) => {
     if (!isValid) return;
     
-    await saveAandeel(values, {
+    await saveAandeel({
+      id: aandeel?.id,
+      ...values,
+    }, {
       throwOnError: false,
-      onSuccess: () => reset(),
+      onSuccess: () => navigate('/aandelen'),
     });
-    reset();
   };
   
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className='w-50 mb-3'>
-        <div className='mb-3'>
-          <label htmlFor='id' className='form-label'>
-            id
-          </label>
-          <input
-            {...register('id', validationRules.id)}
-            id='id'
+      <FormProvider {...methods}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <LabelInput
+            label='ID'
             name='id'
             type='number'
-            className='form-control'
-            placeholder='id'
-            required
+            validationRules={validationRules.id}
           />
-          {errors.id && <p className="form-text text-danger">{errors.id.message}</p> }
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='isin' className='form-label'>
-            ISIN
-          </label>
-          <input
-            {...register('isin', validationRules.isin)}
-            id='isin'
+          <LabelInput
+            label='ISIN'
             name='isin'
             type='text'
-            className='form-control'
-            placeholder='ISIN'
+            validationRules={validationRules.isin}
           />
-          {errors.isin && <p className="form-text text-danger">{errors.isin.message}</p> }
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='afkorting' className='form-label'>
-            afkorting
-          </label>
-          <input
-            {...register('afkorting', validationRules.afkorting)}
-            id='afkorting'
+          <LabelInput
+            label='Afkorting'
             name='afkorting'
             type='text'
-            className='form-control'
-            placeholder='afkorting'
+            validationRules={validationRules.afkorting}
           />
-          {errors.afkorting && <p className="form-text text-danger">{errors.afkorting.message}</p> }
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='uitgever' className='form-label'>
-            uitgever
-          </label>
-          <input
-            {...register('uitgever')}
-            id='uitgever'
+          <LabelInput
+            label='Uitgever'
             name='uitgever'
             type='text'
-            className='form-control'
-            placeholder='uitgever'
           />
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='kosten' className='form-label'>
-            kosten
-          </label>
-          <input
-            {...register('kosten', validationRules.kosten)}
-            id='kosten'
+          <LabelInput
+            label='Kosten'
             name='kosten'
             type='number'
-            className='form-control'
-            placeholder='kosten'
+            validationRules={validationRules.kosten}
           />
-          {errors.kosten && <p className="form-text text-danger">{errors.kosten.message}</p> }
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='type' className='form-label'>
-            type
-          </label>
-          <input
-            {...register('type', validationRules.type)}
-            id='type'
+          <SelectList
+            label='Type'
             name='type'
             type='text'
-            className='form-control'
-            placeholder='type'
+            options={[
+              { value: 'Verspreiden', label: 'Verspreiden' },
+              { value: 'Accumulatie', label: 'Accumulatie' },
+            ]}
+            validationRules={validationRules.type}
           />
-          {errors.type && <p className="form-text text-danger">{errors.type.message}</p> }
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='rating' className='form-label'>
-            rating
-          </label>
-          <input
-            {...register('rating', validationRules.rating)}
-            id='rating'
+          <LabelInput
+            label='Rating'
             name='rating'
             type='number'
-            className='form-control'
-            placeholder='rating'
+            validationRules={validationRules.rating}
           />
-          {errors.rating && <p className="form-text text-danger">{errors.rating.message}</p> }
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='sustainability' className='form-label'>
-            sustainability
-          </label>
-          <input
-            {...register('sustainability', validationRules.sustainability)}
-            id='sustainability'
+          <LabelInput
+            label='Sustainability'
             name='sustainability'
             type='number'
-            className='form-control'
-            placeholder='sustainability'
+            validationRules={validationRules.sustainability}
           />
-          {errors.sustainability && <p className="form-text text-danger">{errors.sustainability.message}</p> }
-        </div>
-        <div className='clearfix'>
-          <div className='btn-group float-end'>
-            <button type='submit' className='btn btn-primary'>
-              Add transaction
-            </button>
+          <div className='clearfix'>
+            <div className='btn-group float-end'>
+              <button type='submit' disabled={isSubmitting} className='btn btn-primary'>
+                {aandeel?.id ? 'Save aandeel' : 'Add aandeel'}
+              </button>
+              <Link
+                disabled={isSubmitting}
+                className='btn btn-light'
+                to='/aandelen'
+              >
+                Cancel
+              </Link>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </FormProvider>
     </>
   );
 }

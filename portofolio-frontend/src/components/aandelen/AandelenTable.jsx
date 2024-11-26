@@ -1,7 +1,10 @@
 // src/components/transactions/TransactionsTable.jsx
+import { useContext } from 'react';
+import { ThemeContext } from '../../contexts/Theme.context';
 import Aandeel from './Aandeel';
 
 function AandelenTable({ aandelen }) {
+  const { theme } = useContext(ThemeContext);
   if (aandelen.length === 0) {
     return (
       <div className='alert alert-info'>There are no aandelen yet.</div>
@@ -10,7 +13,7 @@ function AandelenTable({ aandelen }) {
 
   return (
     <div>
-      <table className='table table-hover table-responsive'>
+      <table className={`table table-hover table-responsive table-${theme}`}>
         <thead>
           <tr>
             <th>ISIN</th>

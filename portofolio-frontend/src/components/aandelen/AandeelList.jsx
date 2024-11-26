@@ -22,7 +22,6 @@ export default function AandeelList() {
       }),
     [search, aandelen],
   );
-
   return (
     <>
       <h1>beschikbare aandelen</h1>
