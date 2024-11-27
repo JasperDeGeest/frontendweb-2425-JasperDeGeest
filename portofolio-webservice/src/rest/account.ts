@@ -3,11 +3,13 @@ import * as accountService from '../service/account';
 import type { PortofolioAppContext, PortofolioAppState } from '../types/koa';
 import type { KoaContext, KoaRouter } from '../types/koa';
 import type {
+  GetAllAccountsResponse,
   RegisterAccountRequest,
   GetAccountByIdResponse,
   UpdateAccountRequest,
   UpdateAccountResponse,
   LoginResponse,
+  GetAccountRequest,
 } from '../types/account';
 import type {
   GetAllAccountAandelenResponse,
@@ -17,6 +19,28 @@ import Joi from 'joi';
 import validate from '../core/validation';
 import { requireAuthentication, makeRequireRole } from '../core/auth'; // 👈 2
 import Role from '../core/roles'; // 👈 4
+import type { Next } from 'koa';
+
+const checkAccountId = (ctx: KoaContext<unknown, GetAccountRequest>, next: Next) => {
+  const { accountId, roles } = ctx.state.session;
+  const { id } = ctx.params;
+
+  // You can only get our own data unless you're an admin
+  if (id !== 'me' && id !== accountId && !roles.includes(Role.ADMIN)) {
+    return ctx.throw(
+      403,
+      'You are not allowed to view this user\'s information',
+      { code: 'FORBIDDEN' },
+    );
+  }
+  return next();
+};
+
+const getAllAccounts = async (ctx: KoaContext<GetAllAccountsResponse>) => {
+  const accounts = await accountService.getAll();
+  ctx.body = { items: accounts };
+};
+getAllAccounts.validationScheme = null;
 
 const registerAccount = async (
   ctx: KoaContext<LoginResponse, void, RegisterAccountRequest>,
@@ -43,13 +67,24 @@ registerAccount.validationScheme = {
   },
 };
 
-const getAccountById = async (ctx: KoaContext<GetAccountByIdResponse, IdParams>) => {
-  //try {
-  ctx.body = await accountService.getById(Number(ctx.params.id));
-  /*} catch (error: any) {
-    ctx.status = 404;
-    ctx.body = error.message;
-  }*/
+const getAccountById = async (
+  ctx: KoaContext<GetAccountByIdResponse, GetAccountRequest>, // 👈
+) => {
+  // 👇
+  const account = await accountService.getById(
+    ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id,
+  );
+  ctx.status = 200;
+  ctx.body = account;
+};
+getAccountById.validationScheme = {
+  params: {
+    // 👇
+    id: Joi.alternatives().try(
+      Joi.number().integer().positive(),
+      Joi.string().valid('me'),
+    ),
+  },
 };
 
 const updateAccount = async (ctx: KoaContext<UpdateAccountResponse, IdParams, UpdateAccountRequest>) => {
@@ -77,9 +112,34 @@ export default (parent: KoaRouter) => {
   });
 
   router.post('/', validate(registerAccount.validationScheme),registerAccount);
-  router.get('/:id', getAccountById);
-  router.put('/:id', updateAccount);
-  router.get('/:id/aandelen', getAandelenByAccountId);
+
+  const requireAdmin = makeRequireRole(Role.ADMIN);
+  router.get(
+    '/',
+    requireAuthentication,
+    requireAdmin,
+    validate(getAllAccounts.validationScheme),
+    getAllAccounts,
+  );
+  router.get(
+    '/:id',
+    requireAuthentication,
+    checkAccountId,
+    validate(getAccountById.validationScheme),
+    getAccountById,
+  );
+  router.put(
+    '/:id',
+    requireAuthentication,
+    checkAccountId,
+    updateAccount,
+  );
+  router.get(
+    '/:id/aandelen',
+    requireAuthentication,
+    checkAccountId, 
+    getAandelenByAccountId,
+  );
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

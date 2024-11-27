@@ -1,4 +1,4 @@
-import type { Entity } from './common';
+import type { Entity, ListResponse } from './common';
 import type { Adres } from './adres';
 import type { Prisma } from '@prisma/client';
 
@@ -45,6 +45,7 @@ export interface UpdateAccountRequest extends
 export interface GetAccountByIdResponse extends PublicAccount {}
 export interface RegisterAccountResponse extends GetAccountByIdResponse {}
 export interface UpdateAccountResponse extends GetAccountByIdResponse {}
+export interface GetAllAccountsResponse extends ListResponse<PublicAccount> {}
 
 export interface LoginRequest {
   email: string;
@@ -53,4 +54,8 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
+}
+
+export interface GetAccountRequest {
+  id: number | 'me';
 }

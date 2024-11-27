@@ -112,6 +112,23 @@ const makeExposedAccount = ({ id, email, voornaam, achternaam }: Account): Publi
   achternaam,
 });
 
+export const getAll = async (): Promise<PublicAccount[]> => {
+  const users = await prisma.account.findMany({
+    include: {
+      adres: {
+        select: {
+          id: true,
+          straat: true,
+          huisNummer: true,
+          stad: true,
+          land: true,
+        },
+      },
+    },
+  });
+  return users.map(makeExposedAccount);
+};
+
 export const getById = async (id: number): Promise<PublicAccount> => {
   const account = await prisma.account.findUnique({
     where: {
