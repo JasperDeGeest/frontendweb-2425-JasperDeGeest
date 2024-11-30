@@ -8,5 +8,7 @@ export interface ListResponse<T> {
 }
 
 export interface IdParams {
-  id: number;
+  id: number | 'me';
+  aandeelId: number;
 }
+

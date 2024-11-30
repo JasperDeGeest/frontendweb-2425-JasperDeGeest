@@ -24,7 +24,7 @@ export default function Navbar() {
           </NavLink>
         </div>
         <div className='nav-item my-2 mx-sm-3 my-sm-0'>
-          <NavLink className='nav-link' to='/account/1/aandelen'>
+          <NavLink className='nav-link' to='/accounts/me/aandelen'>
             AccountAandelen
           </NavLink>
         </div>

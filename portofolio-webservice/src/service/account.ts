@@ -1,6 +1,6 @@
 import { prisma } from '../data';
 import type { Account, AccountUpdateInput, PublicAccount, RegisterAccountRequest } from '../types/account';
-import type { AccountAandeel } from '../types/accountAandeel';
+import type { AccountAandeel, AccountAandeelUpdateInput } from '../types/accountAandeel';
 import { hashPassword, verifyPassword } from '../core/password';
 import Role from '../core/roles'; // Add this line to import Role
 import ServiceError from '../core/serviceError';
@@ -74,7 +74,7 @@ export const checkAndParseSession = async (
 
     // 👇 7
     return {
-      userId: Number(sub),
+      accountId: Number(sub),
       roles,
     };
   } catch (error: any) {
@@ -129,7 +129,7 @@ export const getAll = async (): Promise<PublicAccount[]> => {
   return users.map(makeExposedAccount);
 };
 
-export const getById = async (id: number): Promise<PublicAccount> => {
+export const getById = async (id: number): Promise<Account> => {
   const account = await prisma.account.findUnique({
     where: {
       id,
@@ -151,7 +151,7 @@ export const getById = async (id: number): Promise<PublicAccount> => {
     throw ServiceError.notFound('No account with this id exists');
   }
 
-  return makeExposedAccount(account);
+  return account;
 };
 
 export const register = async ({
@@ -205,7 +205,10 @@ export const updateById = async (id: number, changes: AccountUpdateInput): Promi
     const account = await prisma.account.update({
       where: { id },
       data: {
-        ...changes,
+        email: changes.email,
+        rijksregisterNummer: changes.rijksregisterNummer,
+        voornaam: changes.voornaam,
+        achternaam: changes.achternaam,
         ...(changes.adres && { adres: { update: changes.adres } }),
       },
       include: {
@@ -220,12 +223,51 @@ export const updateById = async (id: number, changes: AccountUpdateInput): Promi
 
 export const getAandelenByAccountId = async (accountId: number): Promise<AccountAandeel[]> => {
   const accountAandelen = await prisma.accountAandeel.findMany({
-    where: { accountId },
+    where: { accountId: Number(accountId) },
+    include: {
+      aandeel: true,
+    },
   });
 
   if(accountAandelen.length < 1) {
     throw new Error('this account has no aandelen.');
   }
   return accountAandelen;
+};
+
+export const updateAccountAandeel = async (accountId: number, aandeelId: number, changes: AccountAandeelUpdateInput): 
+Promise<AccountAandeel> => {
+  try {
+    const accountAandeel = await prisma.accountAandeel.update({
+      where: { accountId_aandeelId: { accountId, aandeelId } },
+      data: {
+        aantal: changes.aantal,
+        aankoopPrijs: changes.aankoopPrijs,
+        reden: changes.reden,
+        geschatteDuur: changes.geschatteDuur,
+      },
+      include: {
+        aandeel: true,
+      },
+    });
+    return accountAandeel;
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};
+
+export const getAccountAandeelById = async (accountId: number, aandeelId: number): Promise<AccountAandeel> => {
+  const accountAandeel = await prisma.accountAandeel.findUnique({
+    where: { accountId_aandeelId: { accountId, aandeelId: Number(aandeelId) } },
+    include: {
+      aandeel: true,
+    },
+  });
+
+  if (!accountAandeel) {
+    throw ServiceError.notFound('No accountAandeel with this id exists');
+  }
+
+  return accountAandeel;
 };
 

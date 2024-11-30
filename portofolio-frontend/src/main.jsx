@@ -3,17 +3,19 @@ import './index.css';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import AandeelList from './components/aandelen/AandeelList.jsx';
-import AccountList from './components/accounts/AccountList.jsx';
 import NotFound from './pages/NotFound';
 import About, { Services, History, Location } from './pages/about/About.jsx';
 import { Navigate } from 'react-router-dom';
 import Layout from './pages/Layout.jsx';
 import AddOrEditAandeel from './pages/aandelen/AddOrEditAandelen.jsx';
+import EditAccounts from './pages/accounts/EditAccounts.jsx';
 import { ThemeProvider } from './contexts/Theme.context.jsx';
 import { AuthProvider } from './contexts/Auth.context.jsx';
 import Login from './pages/Login.jsx';
 import PrivateRoute from './components/PrivateRoute';
 import Logout from './pages/Logout.jsx';
+import AccountAandeelList from './components/accountAandeel/accountAandeelList.jsx';
+import AddOrEditAccountAandelen from './pages/accountAandelen/AddOrEditAccountAandelen.jsx';
 
 const router = createBrowserRouter([
   {
@@ -52,12 +54,28 @@ const router = createBrowserRouter([
       },
       {
         path: '/accounts',
-        element: <AccountList />,
+        element: <PrivateRoute />,
+        children: [
+          {
+            index: true,
+            element: <EditAccounts />,
+          },
+        ],
       },
-      /*{
+      {
         path: '/accounts/:accountId/aandelen',
-        element: <AccountAandeelList />,
-      },*/
+        element: <PrivateRoute />,
+        children: [
+          {
+            index: true,
+            element: <AccountAandeelList />,
+          },
+          {
+            path: 'edit/:aandeelId',
+            element: <AddOrEditAccountAandelen />,
+          },
+        ],
+      },
       {
         path: 'about',
         element: <About />,

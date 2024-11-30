@@ -13,18 +13,21 @@ import type {
 } from '../types/account';
 import type {
   GetAllAccountAandelenResponse,
+  GetAccountAandelenRequest,
+  UpdateAccountAandeelResponse,
+  UpdateAccountAandeelRequest,
+  getAccountAandeelByIdResponse,
 } from '../types/accountAandeel';
-import type { IdParams } from '../types/common';
 import Joi from 'joi';
 import validate from '../core/validation';
-import { requireAuthentication, makeRequireRole } from '../core/auth'; // 👈 2
+import { requireAuthentication, makeRequireRole, authDelay } from '../core/auth'; // 👈 2
 import Role from '../core/roles'; // 👈 4
 import type { Next } from 'koa';
+import type { IdParams } from '../types/common';
 
 const checkAccountId = (ctx: KoaContext<unknown, GetAccountRequest>, next: Next) => {
   const { accountId, roles } = ctx.state.session;
   const { id } = ctx.params;
-
   // You can only get our own data unless you're an admin
   if (id !== 'me' && id !== accountId && !roles.includes(Role.ADMIN)) {
     return ctx.throw(
@@ -55,7 +58,7 @@ registerAccount.validationScheme = {
     email: Joi.string().email(),
     Password: Joi.string().min(12).max(128),
     onbelegdVermogen: Joi.number().min(0),
-    rijksregisterNummer: Joi.string().length(11),
+    rijksregisterNummer: Joi.number().min(10000000000).max(99999999999),
     voornaam: Joi.string().max(255),
     achternaam: Joi.string().max(255),
     adres: Joi.object({
@@ -88,14 +91,26 @@ getAccountById.validationScheme = {
 };
 
 const updateAccount = async (ctx: KoaContext<UpdateAccountResponse, IdParams, UpdateAccountRequest>) => {
-  ctx.body = await accountService.updateById(Number(ctx.params.id), {
-    ...ctx.request.body,
-  });
+  const account = await accountService.updateById(
+    ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id, 
+    ctx.request.body);
+  ctx.status = 200;
+  ctx.body = account;
+};
+updateAccount.validationScheme = {
+  params: {
+    id: Joi.alternatives().try(
+      Joi.number().integer().positive(),
+      Joi.string().valid('me'),
+    ),
+  },
 };
 
-const getAandelenByAccountId = async (ctx: KoaContext<GetAllAccountAandelenResponse, IdParams>) => {
+const getAandelenByAccountId = async (ctx: KoaContext<GetAllAccountAandelenResponse, GetAccountAandelenRequest>) => {
   //try {
-  const accountAandelen = await accountService.getAandelenByAccountId(Number(ctx.params.id));
+  const accountAandelen = await accountService.getAandelenByAccountId(
+    ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id,
+  );
 
   ctx.body = {
     items: accountAandelen,
@@ -106,12 +121,30 @@ const getAandelenByAccountId = async (ctx: KoaContext<GetAllAccountAandelenRespo
   }*/
 };
 
+const updateAccountAandeel = async (ctx: KoaContext<UpdateAccountAandeelResponse, 
+  IdParams, UpdateAccountAandeelRequest>) => {
+  const accountAandeel = await accountService.updateAccountAandeel(
+    ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id, 
+    Number(ctx.params.aandeelId),
+    ctx.request.body);
+  ctx.status = 200;
+  ctx.body = accountAandeel;
+};
+
 export default (parent: KoaRouter) => {
   const router = new Router<PortofolioAppState, PortofolioAppContext>({
     prefix: '/accounts',
   });
 
-  router.post('/', validate(registerAccount.validationScheme),registerAccount);
+  const getAccountAandeelById = async (ctx: KoaContext<getAccountAandeelByIdResponse, IdParams>) => {
+    const accountAandeel = await accountService.getAccountAandeelById(
+      ctx.state.session.accountId,
+      ctx.params.aandeelId);
+    ctx.status = 200;
+    ctx.body = accountAandeel; 
+  };
+
+  router.post('/', authDelay, validate(registerAccount.validationScheme),registerAccount);
 
   const requireAdmin = makeRequireRole(Role.ADMIN);
   router.get(
@@ -132,6 +165,7 @@ export default (parent: KoaRouter) => {
     '/:id',
     requireAuthentication,
     checkAccountId,
+    validate(updateAccount.validationScheme),
     updateAccount,
   );
   router.get(
@@ -139,6 +173,20 @@ export default (parent: KoaRouter) => {
     requireAuthentication,
     checkAccountId, 
     getAandelenByAccountId,
+  );
+  router.put(
+    '/:id/aandelen/:aandeelId',
+    requireAuthentication,
+    checkAccountId,
+    //validate(updateAccountAandeel.validationScheme),
+    updateAccountAandeel,
+  );
+  router.get(
+    '/:id/aandelen/:aandeelId',
+    requireAuthentication,
+    checkAccountId,
+    //validate(updateAccountAandeel.validationScheme),
+    getAccountAandeelById,
   );
 
   parent.use(router.routes()).use(router.allowedMethods());

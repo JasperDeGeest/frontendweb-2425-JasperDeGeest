@@ -20,5 +20,6 @@ export default {
       timeCost: 6,
       memoryCost: 2 ** 17,
     },
+    maxDelay: 5000,
   },
 };

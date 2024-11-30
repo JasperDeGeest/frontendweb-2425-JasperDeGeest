@@ -115,6 +115,7 @@ export default function AandeelForm({ aandeel = EMPTY_AANDEEL, saveAandeel }) {
             label='Kosten'
             name='kosten'
             type='number'
+            step='0.001'
             validationRules={validationRules.kosten}
           />
           <SelectList

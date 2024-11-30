@@ -26,8 +26,16 @@ export interface AccountCreateInput {
 export interface PublicAccount extends Pick<Account, 'id' | 'email' | 'voornaam' | 'achternaam'> {}
 
 export interface AccountUpdateInput extends 
-  Pick<AccountCreateInput, 
-  'email' | 'onbelegdVermogen' | 'rijksregisterNummer' | 'voornaam' | 'achternaam' | 'adres'> {}
+  Pick<AccountCreateInput, 'email' | 'rijksregisterNummer' | 'voornaam' | 'achternaam' | 'adres'> {}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface GetAccountRequest {
+  id: number | 'me';
+}
 
 export interface RegisterAccountRequest {
   email: string;
@@ -39,23 +47,13 @@ export interface RegisterAccountRequest {
   adres: Adres;
 }
 export interface UpdateAccountRequest extends 
-  Pick<RegisterAccountRequest, 
-  'email' | 'onbelegdVermogen' | 'rijksregisterNummer' | 'voornaam' | 'achternaam' | 'adres'> {}
+  Pick<RegisterAccountRequest, 'email' | 'onbelegdVermogen' | 
+  'rijksregisterNummer' | 'voornaam' | 'achternaam' | 'adres'> {}
 
-export interface GetAccountByIdResponse extends PublicAccount {}
-export interface RegisterAccountResponse extends GetAccountByIdResponse {}
-export interface UpdateAccountResponse extends GetAccountByIdResponse {}
 export interface GetAllAccountsResponse extends ListResponse<PublicAccount> {}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
+export interface GetAccountByIdResponse extends PublicAccount {}
+export interface UpdateAccountResponse extends GetAccountByIdResponse {}
 
 export interface LoginResponse {
   token: string;
-}
-
-export interface GetAccountRequest {
-  id: number | 'me';
 }
