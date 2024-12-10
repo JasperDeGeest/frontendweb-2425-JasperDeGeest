@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import AccountAandelenTable from '../../components/accountAandeel/AccountAandeelTable';
 import AsyncData from '../../components/AsyncData';
 import useSWR from 'swr';
@@ -40,6 +41,9 @@ export default function AandeelList() {
         >
           Search
         </button>
+        <Link to='/accounts/me/aandelen/add' className='btn btn-primary ms-2'>
+          +
+        </Link>
       </div>
 
       <div className='mt-4'>

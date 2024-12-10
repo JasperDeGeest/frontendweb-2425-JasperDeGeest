@@ -265,9 +265,8 @@ export const getAccountAandeelById = async (accountId: number, aandeelId: number
   });
 
   if (!accountAandeel) {
-    throw ServiceError.notFound('No accountAandeel with this id exists');
+    throw ServiceError.notFound('No account aandeel with this id exists');
   }
-
   return accountAandeel;
 };
 

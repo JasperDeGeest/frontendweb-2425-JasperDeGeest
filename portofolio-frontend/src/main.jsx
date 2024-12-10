@@ -14,7 +14,7 @@ import { AuthProvider } from './contexts/Auth.context.jsx';
 import Login from './pages/Login.jsx';
 import PrivateRoute from './components/PrivateRoute';
 import Logout from './pages/Logout.jsx';
-import AccountAandeelList from './components/accountAandeel/accountAandeelList.jsx';
+import AccountAandeelList from './components/accountAandeel/AccountAandeelList.jsx';
 import AddOrEditAccountAandelen from './pages/accountAandelen/AddOrEditAccountAandelen.jsx';
 
 const router = createBrowserRouter([
@@ -72,6 +72,10 @@ const router = createBrowserRouter([
           },
           {
             path: 'edit/:aandeelId',
+            element: <AddOrEditAccountAandelen />,
+          },
+          {
+            path: 'add',
             element: <AddOrEditAccountAandelen />,
           },
         ],

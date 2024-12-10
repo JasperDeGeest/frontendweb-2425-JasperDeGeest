@@ -2,25 +2,26 @@
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import LabelInput from '../LabelInput';
+import SelectList from '../SelectList';
 
 //const validationRules = {
 //};
 
 const EMPTY_ACCOUNTAANDEEL = {
-  aandeel: undefined,
+  aandeelId: undefined,
   aantal: undefined,
   aankoopPrijs: undefined,
   reden: '',
   geschatteDuur: '',
 };
 
-export default function AandeelForm({ aandeel: accountAandeel = EMPTY_ACCOUNTAANDEEL, saveAandeel }) {
+export default function AandeelForm({ aandelen = [], accountAandeel = EMPTY_ACCOUNTAANDEEL, saveAccountAandeel }) {
   const navigate = useNavigate();
 
   const methods = useForm({
     mode: 'onBlur',
     defaultValues: {
-      aandeel: accountAandeel?.aandeel,
+      aandeelId: accountAandeel?.aandeel?.id,
       aantal: accountAandeel?.aantal,
       aankoopPrijs: accountAandeel?.aankoopPrijs,
       reden: accountAandeel?.reden,
@@ -35,9 +36,8 @@ export default function AandeelForm({ aandeel: accountAandeel = EMPTY_ACCOUNTAAN
 
   const onSubmit = async (values) => {
     if (!isValid) return;
-    
-    await saveAandeel({
-      id: accountAandeel?.aandeel.id,
+    await saveAccountAandeel({
+      id: accountAandeel?.aandeelId,
       ...values,
     }, {
       throwOnError: false,
@@ -49,6 +49,15 @@ export default function AandeelForm({ aandeel: accountAandeel = EMPTY_ACCOUNTAAN
     <>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
+          <SelectList
+            label='Aandeel'
+            name='aandeelId'
+            options={aandelen.map((aandeelId) => ({
+              value: aandeelId.id,
+              label: aandeelId.afkorting,
+            }))}
+            disabled={accountAandeel?.aandeel?.id}
+          ></SelectList>
           <LabelInput
             label='Aantal'
             name='aantal'
