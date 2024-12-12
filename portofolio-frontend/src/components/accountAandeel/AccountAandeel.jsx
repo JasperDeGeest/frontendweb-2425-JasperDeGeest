@@ -1,6 +1,6 @@
 import { memo } from 'react'; // 👈
 import { Link } from 'react-router-dom';
-import { IoPencilOutline } from 'react-icons/io5';
+import { IoPencilOutline, IoTrashOutline } from 'react-icons/io5';
 
 const AccountAandeelMemoized = memo(function AccountAandeel({
   aandeel,
@@ -8,7 +8,11 @@ const AccountAandeelMemoized = memo(function AccountAandeel({
   aankoopPrijs,
   reden,
   geschatteDuur,
+  onDelete,
 }) {
+  const handleDelete = () => {
+    onDelete(aandeel.id);
+  };
   return (
     <tr>
       <td>{aandeel.afkorting}</td>
@@ -18,7 +22,13 @@ const AccountAandeelMemoized = memo(function AccountAandeel({
       <td>{geschatteDuur}</td>
       <td><Link to={`/accounts/me/aandelen/edit/${aandeel.id}`} className='btn btn-light'>
         <IoPencilOutline />
-      </Link></td>
+      </Link>
+      </td>
+      <td>
+        <button className='btn btn-primary' onClick={handleDelete}>
+          <IoTrashOutline />
+        </button>
+      </td>
     </tr>
   );
 });

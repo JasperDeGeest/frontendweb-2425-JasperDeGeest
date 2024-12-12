@@ -64,15 +64,13 @@ const updateAandeel = async (ctx: KoaContext<UpdateAandeelResponse, IdParams, Up
 };
 
 const deleteAandeel = async (ctx: KoaContext<void, IdParams>) => {
-  await aandeelService.deleteById(Number(ctx.params.id));
-  ctx.status = 204;
-  /*try {
+  try {
     await aandeelService.deleteById(Number(ctx.params.id));
     ctx.status = 204;
   } catch (error: any) {
     ctx.status = 409;
     ctx.body = error.message;
-  }*/
+  }
 };
 
 export default (parent: KoaRouter) => {

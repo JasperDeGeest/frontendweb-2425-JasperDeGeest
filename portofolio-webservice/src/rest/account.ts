@@ -17,6 +17,8 @@ import type {
   UpdateAccountAandeelResponse,
   UpdateAccountAandeelRequest,
   getAccountAandeelByIdResponse,
+  CreateAccountAandeelRequest,
+  CreateAccountAandeelResponse,
 } from '../types/accountAandeel';
 import Joi from 'joi';
 import validate from '../core/validation';
@@ -131,6 +133,24 @@ const updateAccountAandeel = async (ctx: KoaContext<UpdateAccountAandeelResponse
   ctx.body = accountAandeel;
 };
 
+const createAccountAandeel = async (ctx: KoaContext<CreateAccountAandeelResponse, 
+  void, CreateAccountAandeelRequest>) => {
+  console.log(ctx.state.session);
+  const newAccountAandeel = await accountService.createAccountAandeel(
+    ctx.request.body,
+    ctx.state.session.accountId,
+  );
+  ctx.status = 201;
+  ctx.body = newAccountAandeel;
+};
+
+createAccountAandeel.validationScheme = {
+  body: {
+    aandeelId: Joi.number().integer().positive(),
+    aantal: Joi.number().integer().positive(),
+  },
+};
+
 export default (parent: KoaRouter) => {
   const router = new Router<PortofolioAppState, PortofolioAppContext>({
     prefix: '/accounts',
@@ -142,6 +162,13 @@ export default (parent: KoaRouter) => {
       ctx.params.aandeelId);
     ctx.status = 200;
     ctx.body = accountAandeel; 
+  };
+
+  const deleteAccountAandeel = async (ctx: KoaContext<void, IdParams>) => {
+    await accountService.deleteAccountAandeel(
+      ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id, 
+      ctx.params.aandeelId);
+    ctx.status = 204;
   };
 
   router.post('/', authDelay, validate(registerAccount.validationScheme),registerAccount);
@@ -187,6 +214,18 @@ export default (parent: KoaRouter) => {
     checkAccountId,
     //validate(updateAccountAandeel.validationScheme),
     getAccountAandeelById,
+  );
+  router.post(
+    '/:id/aandelen',
+    requireAuthentication,
+    //validate(createAccountAandeel.validationScheme),
+    createAccountAandeel,
+  );
+  router.delete(
+    '/:id/aandelen/:aandeelId',
+    requireAuthentication,
+    checkAccountId,
+    deleteAccountAandeel,
   );
 
   parent.use(router.routes()).use(router.allowedMethods());

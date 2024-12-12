@@ -56,14 +56,14 @@ export default function AandeelForm({ aandeel = EMPTY_AANDEEL, saveAandeel }) {
   const methods = useForm({
     mode: 'onBlur',
     defaultValues: {
-      id: aandeel?.id,
+      id: Number(aandeel?.id),
       isin: aandeel?.isin,
       afkorting: aandeel?.afkorting,
       uitgever: aandeel?.uitgever,
-      kosten: aandeel?.kosten,
+      kosten: Number(aandeel?.kosten),
       type: aandeel?.type,
-      rating: aandeel?.rating,
-      sustainability: aandeel?.sustainability,
+      rating: Number(aandeel?.rating),
+      sustainability: Number(aandeel?.sustainability),
     },
   });
 
@@ -76,8 +76,11 @@ export default function AandeelForm({ aandeel = EMPTY_AANDEEL, saveAandeel }) {
     if (!isValid) return;
     
     await saveAandeel({
-      id: aandeel?.id,
+      id: Number(aandeel?.id),
       ...values,
+      kosten: Number(values.kosten),
+      rating: Number(values.rating),
+      sustainability: Number(values.sustainability),
     }, {
       throwOnError: false,
       onSuccess: () => navigate('/aandelen'),

@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import AccountAandelenTable from '../../components/accountAandeel/AccountAandeelTable';
 import AsyncData from '../../components/AsyncData';
 import useSWR from 'swr';
-import { getAll } from '../../api';
+import { getAll, deleteById } from '../../api';
+import useSWRMutation from 'swr/mutation';
 
 export default function AandeelList() {
   const [text, setText] = useState('');
@@ -22,6 +23,20 @@ export default function AandeelList() {
       }),
     [search, accountAandelen],
   );
+
+  const { trigger: deleteAccountAandeel, error: deleteError } = useSWRMutation(
+    'accounts/me/aandelen',
+    deleteById,
+  );
+
+  const handleDeleteAccountAandeel = useCallback(
+    async (id) => {
+      await deleteAccountAandeel(id);
+      alert('Account aandeel deleted');
+    },
+    [deleteAccountAandeel],
+  );
+
   return (
     <>
       <h1>eigen aandelen</h1>
@@ -47,9 +62,10 @@ export default function AandeelList() {
       </div>
 
       <div className='mt-4'>
-        <AsyncData loading={isLoading} error={error}>
+        <AsyncData loading={isLoading} error={error || deleteError }>
           <AccountAandelenTable 
-            accountAandelen={filteredAccountAandelen}       
+            accountAandelen={filteredAccountAandelen}
+            onDelete={handleDeleteAccountAandeel}       
           />
         </AsyncData>
       </div>

@@ -1,6 +1,7 @@
-import { IoPencilOutline } from 'react-icons/io5';
+import { IoPencilOutline, IoTrashOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { memo } from 'react'; // 👈
+import { useAuth } from '../../contexts/auth'; // 👈
 
 const AandeelMemoized = memo(function Aandeel({
   id, 
@@ -11,7 +12,12 @@ const AandeelMemoized = memo(function Aandeel({
   type, 
   rating, 
   sustainability,
+  onDelete,
 }) {
+  const { isAdmin } = useAuth(); // 👈
+  const handleDelete = () => {
+    onDelete(id);
+  };
   return (
     <tr>
       <td>{isin}</td>
@@ -21,9 +27,22 @@ const AandeelMemoized = memo(function Aandeel({
       <td>{type}</td>
       <td>{rating}</td>
       <td>{sustainability}</td>
-      <td><Link to={`/aandelen/edit/${id}`} className='btn btn-light'>
-        <IoPencilOutline />
-      </Link></td>
+      {
+        isAdmin ? (
+          <>
+            <td>
+              <Link to={`/aandelen/edit/${id}`} className='btn btn-light'>
+                <IoPencilOutline />
+              </Link>
+            </td>
+            <td>
+              <button className='btn btn-primary' onClick={handleDelete}>
+                <IoTrashOutline />
+              </button>
+            </td>
+          </>
+        ) : (null)
+      }
     </tr>
   );
 });

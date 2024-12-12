@@ -1,11 +1,7 @@
-// src/components/transactions/AandeelForm.jsx
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import LabelInput from '../LabelInput';
 import SelectList from '../SelectList';
-
-//const validationRules = {
-//};
 
 const EMPTY_ACCOUNTAANDEEL = {
   aandeelId: undefined,
@@ -21,9 +17,9 @@ export default function AandeelForm({ aandelen = [], accountAandeel = EMPTY_ACCO
   const methods = useForm({
     mode: 'onBlur',
     defaultValues: {
-      aandeelId: accountAandeel?.aandeel?.id,
-      aantal: accountAandeel?.aantal,
-      aankoopPrijs: accountAandeel?.aankoopPrijs,
+      aandeelId: Number(accountAandeel?.aandeel?.id),
+      aantal: Number(accountAandeel?.aantal),
+      aankoopPrijs: Number(accountAandeel?.aankoopPrijs),
       reden: accountAandeel?.reden,
       geschatteDuur: accountAandeel?.geschatteDuur,
     },
@@ -39,6 +35,9 @@ export default function AandeelForm({ aandelen = [], accountAandeel = EMPTY_ACCO
     await saveAccountAandeel({
       id: accountAandeel?.aandeelId,
       ...values,
+      aandeelId: Number(values.aandeelId),
+      aantal: Number(values.aantal),
+      aankoopPrijs: Number(values.aankoopPrijs),
     }, {
       throwOnError: false,
       onSuccess: () => navigate('/accounts/me/aandelen'),

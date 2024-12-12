@@ -2,8 +2,10 @@
 import { useContext } from 'react';
 import { ThemeContext } from '../../contexts/Theme.context';
 import Aandeel from './Aandeel';
+import { useAuth } from '../../contexts/auth';
 
-function AandelenTable({ aandelen }) {
+function AandelenTable({ aandelen, onDelete }) {
+  const { isAdmin } = useAuth();
   const { theme } = useContext(ThemeContext);
   if (aandelen.length === 0) {
     return (
@@ -23,13 +25,21 @@ function AandelenTable({ aandelen }) {
             <th>type</th>
             <th>rating</th>
             <th>sustainability</th>
-            <th>Edit</th>
+            {
+              isAdmin ? (
+                <>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </>
+              ) : (null)
+            }
           </tr>
         </thead>
         <tbody>
           {aandelen.map((aandeel) => (
             <Aandeel 
               key={aandeel.id}
+              onDelete = {onDelete}
               {...aandeel} />
           ))}
         </tbody>

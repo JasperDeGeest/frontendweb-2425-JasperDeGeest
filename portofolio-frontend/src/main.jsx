@@ -16,6 +16,8 @@ import PrivateRoute from './components/PrivateRoute';
 import Logout from './pages/Logout.jsx';
 import AccountAandeelList from './components/accountAandeel/AccountAandeelList.jsx';
 import AddOrEditAccountAandelen from './pages/accountAandelen/AddOrEditAccountAandelen.jsx';
+import Register from './pages/Register.jsx';
+import PrivateGuard from './components/PrivateGuard.jsx';
 
 const router = createBrowserRouter([
   {
@@ -36,11 +38,23 @@ const router = createBrowserRouter([
           },
           {
             path: 'add',
-            element: <AddOrEditAandeel />,
+            element: <PrivateGuard />,
+            children: [
+              {
+                index: true,
+                element: <AddOrEditAandeel />,
+              },
+            ],
           },
           {
             path: 'edit/:id',
-            element: <AddOrEditAandeel />,
+            element: <PrivateGuard />,
+            children: [
+              {
+                index: true,
+                element: <AddOrEditAandeel />,
+              },
+            ],
           },
         ],
       },
@@ -51,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: '/logout',
         element: <Logout />,
+      },
+      {
+        path: '/register',
+        element: <Register />,
       },
       {
         path: '/accounts',
@@ -76,6 +94,10 @@ const router = createBrowserRouter([
           },
           {
             path: 'add',
+            element: <AddOrEditAccountAandelen />,
+          },
+          {
+            path: 'remove/:aandeelId',
             element: <AddOrEditAccountAandelen />,
           },
         ],

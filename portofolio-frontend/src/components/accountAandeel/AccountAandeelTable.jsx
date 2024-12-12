@@ -1,9 +1,9 @@
 // src/components/transactions/TransactionsTable.jsx
 import { useContext } from 'react';
 import { ThemeContext } from '../../contexts/Theme.context';
-import AccountAandeel from './accountAandeel';
+import AccountAandeel from './AccountAandeel';
 
-function AccountAandelenTable({ accountAandelen = [] }) {
+function AccountAandelenTable({ accountAandelen = [], onDelete }) {
   const { theme } = useContext(ThemeContext);
   if (accountAandelen.length === 0) {
     return (
@@ -22,12 +22,14 @@ function AccountAandelenTable({ accountAandelen = [] }) {
             <th>reden</th>
             <th>geschatteDuur</th>
             <th>Edit</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
           {accountAandelen.map((accountAandeel,index) => (
             <AccountAandeel 
               key={index}
+              onDelete = {onDelete}
               {...accountAandeel} />
           ))}
         </tbody>

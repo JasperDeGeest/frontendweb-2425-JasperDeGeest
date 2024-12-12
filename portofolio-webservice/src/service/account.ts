@@ -1,6 +1,6 @@
 import { prisma } from '../data';
 import type { Account, AccountUpdateInput, PublicAccount, RegisterAccountRequest } from '../types/account';
-import type { AccountAandeel, AccountAandeelUpdateInput } from '../types/accountAandeel';
+import type { AccountAandeel, AccountAandeelCreateInput, AccountAandeelUpdateInput } from '../types/accountAandeel';
 import { hashPassword, verifyPassword } from '../core/password';
 import Role from '../core/roles'; // Add this line to import Role
 import ServiceError from '../core/serviceError';
@@ -256,6 +256,32 @@ Promise<AccountAandeel> => {
   }
 };
 
+export const createAccountAandeel = async (accountAandeel: AccountAandeelCreateInput, accountId: number):
+Promise<AccountAandeel> => {
+  try {
+    const newAccountAandeel = await prisma.accountAandeel.create({
+      data: {
+        aantal: accountAandeel.aantal,
+        aankoopPrijs: accountAandeel.aankoopPrijs,
+        reden: accountAandeel.reden,
+        geschatteDuur: accountAandeel.geschatteDuur,
+        account: {
+          connect: { id: accountId },
+        },
+        aandeel: {
+          connect: { id: accountAandeel.aandeelId },
+        },
+      },
+      include: {
+        aandeel: true,
+      },
+    });
+    return newAccountAandeel;
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};
+
 export const getAccountAandeelById = async (accountId: number, aandeelId: number): Promise<AccountAandeel> => {
   const accountAandeel = await prisma.accountAandeel.findUnique({
     where: { accountId_aandeelId: { accountId, aandeelId: Number(aandeelId) } },
@@ -270,3 +296,12 @@ export const getAccountAandeelById = async (accountId: number, aandeelId: number
   return accountAandeel;
 };
 
+export const deleteAccountAandeel = async (accountId: number, aandeelId: number): Promise<void> => {
+  try {
+    await prisma.accountAandeel.delete({
+      where: { accountId_aandeelId: { accountId, aandeelId: Number(aandeelId) } },
+    });
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};

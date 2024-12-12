@@ -1,13 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import AandelenTable from '../../components/aandelen/AandelenTable';
 import AsyncData from '../../components/AsyncData';
 import useSWR from 'swr';
-import { getAll } from '../../api';
+import useSWRMutation from 'swr/mutation';
+import { getAll, deleteById } from '../../api';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/auth';
 
 export default function AandeelList() {
   const [text, setText] = useState('');
   const [search, setSearch] = useState('');
+  const { isAdmin } = useAuth();
 
   const {
     data: aandelen = [],
@@ -22,6 +25,20 @@ export default function AandeelList() {
       }),
     [search, aandelen],
   );
+
+  const { trigger: deleteAandeel, error: deleteError } = useSWRMutation(
+    'aandelen',
+    deleteById,
+  );
+
+  const handleDeleteAandeel = useCallback(
+    async (id) => {
+      await deleteAandeel(id);
+      alert('aandeel deleted');
+    },
+    [deleteAandeel],
+  );
+
   return (
     <>
       <h1>beschikbare aandelen</h1>
@@ -41,15 +58,19 @@ export default function AandeelList() {
         >
           Search
         </button>
-        <Link to='/aandelen/add' className='btn btn-primary ms-2'>
-          +
-        </Link>
+        {
+          isAdmin ? (
+            <Link to='/aandelen/add' className='btn btn-primary ms-2'>
+              +
+            </Link>
+          ) : (null)
+        }
       </div>
-
       <div className='mt-4'>
-        <AsyncData loading={isLoading} error={error}>
+        <AsyncData loading={isLoading} error={error || deleteError}>
           <AandelenTable 
-            aandelen={filteredAandelen}       
+            aandelen={filteredAandelen}  
+            onDelete={handleDeleteAandeel}     
           />
         </AsyncData>
       </div>

@@ -95,6 +95,11 @@ export default function Login() {
             </div>
           </div>
         </form>
+        <div className='text-center mt-3'>
+          <p>
+            Don&apos;t have an account? <a href='/register'>Register here</a>
+          </p>
+        </div>
       </div>
     </FormProvider>
   );

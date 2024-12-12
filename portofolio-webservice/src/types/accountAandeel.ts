@@ -11,6 +11,7 @@ export interface AccountAandeel {
 }
 
 export interface AccountAandeelCreateInput {
+  //accountId: number | 'me';
   aandeelId: number;
   aantal: number;
   aankoopPrijs: number;
@@ -27,6 +28,7 @@ export interface UpdateAccountAandeelRequest extends Omit<AccountAandeelUpdateIn
 export interface GetAllAccountAandelenResponse extends ListResponse<AccountAandeel> {}
 export interface UpdateAccountAandeelResponse extends AccountAandeel {}
 export interface getAccountAandeelByIdResponse extends AccountAandeel {}
+export interface CreateAccountAandeelResponse extends getAccountAandeelByIdResponse {}
 
 export interface GetAccountAandelenRequest {
   id: number | 'me';
