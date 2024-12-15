@@ -8,12 +8,8 @@ import {
 import LabelInput from '../components/LabelInput';
 import { useAuth } from '../contexts/auth';
 import Error from '../components/Error';
-import { useThemeColors } from '../contexts/theme';
 
 export default function Register() {
-  const {
-    theme, oppositeTheme,
-  } = useThemeColors();
   const {
     error, loading, register,
   } = useAuth();
@@ -32,10 +28,11 @@ export default function Register() {
 
   const handleRegister = useCallback(
     async ({
-      name, email, password,
+      email, password, onbelegdVermogen, rijksregisterNummer, voornaam, achternaam, straat, huisNummer, stad, land,
     }) => {
       const loggedIn = await register({
-        name, email, password,
+        email, password, onbelegdVermogen: Number(onbelegdVermogen), rijksregisterNummer: Number(rijksregisterNummer), 
+        voornaam, achternaam, adres: { straat, huisNummer: huisNummer, stad, land },
       });
 
       if (loggedIn) {
@@ -49,7 +46,6 @@ export default function Register() {
   );
 
   const validationRules = useMemo(() => ({
-    name: { required: 'Name is required' },
     email: { required: 'Email is required' },
     password: { required: 'Password is required' },
     confirmPassword: {
@@ -59,70 +55,124 @@ export default function Register() {
         return password === value || 'Passwords do not match';
       },
     },
+    onbelegdVermogen: { required: 'Onbelegd Vermogen is required' },
+    rijksregisterNummer: { required: 'Rijksregister Nummer is required' },
+    voornaam: { required: 'Voornaam is required' },
+    achternaam: { required: 'Achternaam is required' },
+    straat: { required: 'Straat is required' },
+    huisNummer: { required: 'Huisnummer is required' },
+    stad: { required: 'Stad is required' },
+    land: { required: 'Land is required' },
   }), [getValues]);
 
   return (
     <FormProvider {...methods}>
-      <div className={`container bg-${theme} text-${oppositeTheme}`}>
-        <form
-          className='d-flex flex-column'
-          onSubmit={handleSubmit(handleRegister)}
-        >
-          <h1>Register</h1>
+      <form
+        className='d-flex flex-column'
+        onSubmit={handleSubmit(handleRegister)}
+      >
+        <h1>Register</h1>
 
-          <Error error={error} />
+        <Error error={error} />
 
-          <LabelInput
-            label='Name'
-            type='text'
-            name='name'
-            placeholder='Your Name'
-            validationRules={validationRules.name}
-          />
+        <LabelInput
+          label='Email'
+          type='text'
+          name='email'
+          placeholder='your@email.com'
+          validationRules={validationRules.email}
+        />
 
-          <LabelInput
-            label='Email'
-            type='text'
-            name='email'
-            placeholder='your@email.com'
-            validationRules={validationRules.email}
-          />
+        <LabelInput
+          label='Password'
+          type='password'
+          name='password'
+          validationRules={validationRules.password}
+        />
 
-          <LabelInput
-            label='Password'
-            type='password'
-            name='password'
-            validationRules={validationRules.password}
-          />
+        <LabelInput
+          label='Confirm password'
+          type='password'
+          name='confirmPassword'
+          validationRules={validationRules.confirmPassword}
+        />
 
-          <LabelInput
-            label='Confirm password'
-            type='password'
-            name='confirmPassword'
-            validationRules={validationRules.confirmPassword}
-          />
+        <LabelInput
+          label='Onbelegd Vermogen'
+          type='number'
+          name='onbelegdVermogen'
+          validationRules={validationRules.onbelegdVermogen}
+        />
 
-          <div className='clearfix'>
-            <div className='btn-group float-end'>
-              <button
-                type='submit'
-                className='btn btn-primary'
-                disabled={loading}
-              >
-                Register
-              </button>
+        <LabelInput
+          label='Rijksregister Nummer'
+          type='number'
+          name='rijksregisterNummer'
+          validationRules={validationRules.rijksregisterNummer}
+        />
 
-              <button
-                type='button'
-                className='btn btn-light'
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-            </div>
+        <LabelInput
+          label='Voornaam'
+          type='text'
+          name='voornaam'
+          validationRules={validationRules.voornaam}
+        />
+
+        <LabelInput
+          label='Achternaam'
+          type='text'
+          name='achternaam'
+          validationRules={validationRules.achternaam}
+        />
+
+        <LabelInput
+          label='Straat'
+          type='text'
+          name='straat'
+          validationRules={validationRules.straat}
+        />
+
+        <LabelInput
+          label='Huisnummer'
+          type='text'
+          name='huisNummer'
+          validationRules={validationRules.huisnummer}
+        />
+
+        <LabelInput
+          label='Stad'
+          type='text'
+          name='stad'
+          validationRules={validationRules.stad}
+        />
+
+        <LabelInput
+          label='Land'
+          type='text'
+          name='land'
+          validationRules={validationRules.land}
+        />
+
+        <div className='clearfix'>
+          <div className='btn-group float-end'>
+            <button
+              type='submit'
+              className='btn btn-primary'
+              disabled={loading}
+            >
+              Register
+            </button>
+
+            <button
+              type='button'
+              className='btn btn-light'
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </FormProvider>
   );
 }

@@ -156,7 +156,7 @@ export const getById = async (id: number): Promise<Account> => {
 
 export const register = async ({
   email,
-  Password,
+  password,
   onbelegdVermogen,
   rijksregisterNummer,
   voornaam,
@@ -164,7 +164,7 @@ export const register = async ({
   adres,
 }: RegisterAccountRequest): Promise<string> => {
   try {
-    const passwordHash = await hashPassword(Password);
+    const passwordHash = await hashPassword(password);
 
     const newAdres = await prisma.adres.create({
       data : adres,
@@ -181,7 +181,7 @@ export const register = async ({
         adres: {
           connect: { id: newAdres.id },
         },
-        roles: JSON.stringify([Role.USER]),
+        roles: Role.USER,
       },
       include: {
         adres: true,

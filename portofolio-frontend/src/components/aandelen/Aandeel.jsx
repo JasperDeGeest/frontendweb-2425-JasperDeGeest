@@ -19,24 +19,24 @@ const AandeelMemoized = memo(function Aandeel({
     onDelete(id);
   };
   return (
-    <tr>
-      <td>{isin}</td>
-      <td>{afkorting}</td>
-      <td>{uitgever}</td>
-      <td>{kosten}</td>
-      <td>{type}</td>
-      <td>{rating}</td>
-      <td>{sustainability}</td>
+    <tr data-cy='aandeel'>
+      <td data-cy='aandeel_isin'>{isin}</td>
+      <td data-cy='aandeel_afkorting'>{afkorting}</td>
+      <td data-cy='aandeel_uitgever'>{uitgever}</td>
+      <td data-cy='aandeel_kosten'>{kosten}</td>
+      <td data-cy='aandeel_type'>{type}</td>
+      <td data-cy='aandeel_rating'>{rating}</td>
+      <td data-cy='aandeel_sustainability'>{sustainability}</td>
       {
         isAdmin ? (
           <>
             <td>
-              <Link to={`/aandelen/edit/${id}`} className='btn btn-light'>
+              <Link to={`/aandelen/edit/${id}`} className='btn btn-light' data-cy='aandeel_edit_btn'>
                 <IoPencilOutline />
               </Link>
             </td>
             <td>
-              <button className='btn btn-primary' onClick={handleDelete}>
+              <button className='btn btn-primary' onClick={handleDelete} data-cy='aandeel_remove_btn'>
                 <IoTrashOutline />
               </button>
             </td>

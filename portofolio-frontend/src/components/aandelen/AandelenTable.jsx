@@ -9,7 +9,7 @@ function AandelenTable({ aandelen, onDelete }) {
   const { theme } = useContext(ThemeContext);
   if (aandelen.length === 0) {
     return (
-      <div className='alert alert-info'>There are no aandelen yet.</div>
+      <div className='alert alert-info' data-cy='no_aandelen_message'>There are no aandelen yet.</div>
     );
   }
 

@@ -5,42 +5,46 @@ import LabelInput from '../LabelInput';
 import SelectList from '../SelectList';
 
 const validationRules = {
-  id: {
-    required: 'id is required',
-    min: { value: 1, message: 'min 1' },
-  },
   isin: {
+    required: 'ISIN is required',
     pattern: {
       value: /^[A-Za-z0-9]{12}$/,
       message: 'ISIN must be 12 numbers or characters',
     },
   },
   type: {
+    required: 'Type is required',
     validate: (value) =>
       value === 'Verspreiden' || value === 'Accumulatie' || 'Type moet Verspreiden of Accumulatie zijn',
   },
   afkorting: {
+    required: 'Afkorting is required',
     pattern: {
       value: /^[A-Z]{4}$/,
-      message: 'Afkorting must be 4 characters',
+      message: 'Afkorting must be 4 capital letters',
     },
   },
+  uitgever: {
+    required: 'Uitgever is required',
+  },
   kosten: {
+    required: 'Kosten is required',
     min: { value: 0, message: 'Kosten must be at least 0' },
     max: { value: 1, message: 'Kosten must be at most 1' },
   },
   rating: {
+    required: 'Rating is required',
     min: { value: 0, message: 'Rating must be at least 0' },
     max: { value: 5, message: 'Rating must be at most 5' },
   },
   sustainability: {
+    required: 'Sustainability is required',
     min: { value: 0, message: 'Sustainability must be at least 0' },
     max: { value: 5, message: 'Sustainability must be at most 5' },
   },
 };
 
 const EMPTY_AANDEEL = {
-  id: undefined,
   isin: '',
   afkorting: '',
   uitgever: '',
@@ -56,7 +60,6 @@ export default function AandeelForm({ aandeel = EMPTY_AANDEEL, saveAandeel }) {
   const methods = useForm({
     mode: 'onBlur',
     defaultValues: {
-      id: Number(aandeel?.id),
       isin: aandeel?.isin,
       afkorting: aandeel?.afkorting,
       uitgever: aandeel?.uitgever,
@@ -76,7 +79,7 @@ export default function AandeelForm({ aandeel = EMPTY_AANDEEL, saveAandeel }) {
     if (!isValid) return;
     
     await saveAandeel({
-      id: Number(aandeel?.id),
+      id: aandeel?.id,
       ...values,
       kosten: Number(values.kosten),
       rating: Number(values.rating),
@@ -92,27 +95,25 @@ export default function AandeelForm({ aandeel = EMPTY_AANDEEL, saveAandeel }) {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <LabelInput
-            label='ID'
-            name='id'
-            type='number'
-            validationRules={validationRules.id}
-          />
-          <LabelInput
             label='ISIN'
             name='isin'
             type='text'
             validationRules={validationRules.isin}
+            data-cy = 'isin_input'
           />
           <LabelInput
             label='Afkorting'
             name='afkorting'
             type='text'
             validationRules={validationRules.afkorting}
+            data-cy = 'afkorting_input'
           />
           <LabelInput
             label='Uitgever'
             name='uitgever'
             type='text'
+            validationRules={validationRules.uitgever}
+            data-cy = 'uitgever_input'
           />
           <LabelInput
             label='Kosten'
@@ -120,6 +121,7 @@ export default function AandeelForm({ aandeel = EMPTY_AANDEEL, saveAandeel }) {
             type='number'
             step='0.001'
             validationRules={validationRules.kosten}
+            data-cy = 'kosten_input'
           />
           <SelectList
             label='Type'
@@ -130,22 +132,25 @@ export default function AandeelForm({ aandeel = EMPTY_AANDEEL, saveAandeel }) {
               { value: 'Accumulatie', label: 'Accumulatie' },
             ]}
             validationRules={validationRules.type}
+            data-cy = 'type_input'
           />
           <LabelInput
             label='Rating'
             name='rating'
             type='number'
             validationRules={validationRules.rating}
+            data-cy = 'rating_input'
           />
           <LabelInput
             label='Sustainability'
             name='sustainability'
             type='number'
             validationRules={validationRules.sustainability}
+            data-cy = 'sustainability_input'
           />
           <div className='clearfix'>
             <div className='btn-group float-end'>
-              <button type='submit' disabled={isSubmitting} className='btn btn-primary'>
+              <button type='submit' disabled={isSubmitting} className='btn btn-primary' data-cy = 'submit_aandeel'>
                 {aandeel?.id ? 'Save aandeel' : 'Add aandeel'}
               </button>
               <Link

@@ -50,6 +50,7 @@ getAllAccounts.validationScheme = null;
 const registerAccount = async (
   ctx: KoaContext<LoginResponse, void, RegisterAccountRequest>,
 ) => {
+  console.log(ctx.request.body);
   const token = await accountService.register(ctx.request.body);
   ctx.status = 201;
   ctx.body = { token };

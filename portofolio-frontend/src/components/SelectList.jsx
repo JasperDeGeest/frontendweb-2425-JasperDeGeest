@@ -33,7 +33,7 @@ export default function SelectList({
         ))}
       </select>
       {hasError ? (
-        <div className='form-text text-danger'>{errors[name].message}</div>
+        <div className='form-text text-danger' data-cy='select-input-error'>{errors[name].message}</div>
       ) : null}
     </div>
   );
