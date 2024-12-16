@@ -6,8 +6,8 @@ import * as accountService from '../service/account';
 import type {
   KoaContext,
   KoaRouter,
-  PortofolioAppState,
-  PortofolioAppContext,
+  portfolioAppState,
+  portfolioAppContext,
 } from '../types/koa';
 import type { LoginResponse, LoginRequest } from '../types/account';
 import { authDelay } from '../core/auth'; // 👈
@@ -32,7 +32,7 @@ login.validationScheme = {
 
 // 👇 6
 export default function installSessionRouter(parent: KoaRouter) {
-  const router = new Router<PortofolioAppState, PortofolioAppContext>({
+  const router = new Router<portfolioAppState, portfolioAppContext>({
     prefix: '/sessions',
   });
 

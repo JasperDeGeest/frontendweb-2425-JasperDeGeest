@@ -7,8 +7,8 @@ import installMiddlewares from './core/installMiddlewares';
 import installRest from './rest';
 import type {
   KoaApplication,
-  PortofolioAppContext,
-  PortofolioAppState,
+  portfolioAppContext,
+  portfolioAppState,
 } from './types/koa'; // 👈 1
 
 // 👇 1
@@ -20,7 +20,7 @@ export interface Server {
 
 // 👇 2
 export default async function createServer(): Promise<Server> {
-  const app = new Koa<PortofolioAppState, PortofolioAppContext>();
+  const app = new Koa<portfolioAppState, portfolioAppContext>();
 
   installMiddlewares(app);
   await initializeData();

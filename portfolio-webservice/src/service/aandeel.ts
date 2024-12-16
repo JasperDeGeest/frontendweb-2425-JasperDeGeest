@@ -1,5 +1,7 @@
 import type { Aandeel, AandeelCreateInput, AandeelUpdateInput } from '../types/aandeel';
 import { prisma } from '../data';
+import ServiceError from '../core/serviceError';
+import handleDBError from './_handleDBError';
 
 export const getAll = async (): Promise<Aandeel[]> => {
   return prisma.aandeel.findMany();
@@ -13,16 +15,20 @@ export const getById = async (id: number): Promise<Aandeel> => {
   });
 
   if (!aandeel) {
-    throw new Error('No aandeel with this id exists');
+    throw ServiceError.notFound('No aandeel with this id exists');
   }
 
   return aandeel;
 };
 
 export const create = async (aandeel: AandeelCreateInput): Promise<Aandeel> => {
-  return prisma.aandeel.create({
-    data: aandeel,
-  });
+  try {
+    return prisma.aandeel.create({
+      data: aandeel,
+    });
+  } catch (error: any) {
+    throw handleDBError(error);
+  }
 };
 
 export const updateById = async (id: number, changes: AandeelUpdateInput): Promise<Aandeel> => {

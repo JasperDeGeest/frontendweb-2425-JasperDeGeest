@@ -1,6 +1,6 @@
 import type {
-  PortofolioAppContext,
-  PortofolioAppState,
+  portfolioAppContext,
+  portfolioAppState,
   KoaApplication,
 } from '../types/koa';
 
@@ -11,7 +11,7 @@ import installAccountRouter from './account';
 import installSessionRouter from './sessions';
 
 export default (app: KoaApplication) => {
-  const router = new Router<PortofolioAppState, PortofolioAppContext>({
+  const router = new Router<portfolioAppState, portfolioAppContext>({
     prefix: '/api',
   });
 

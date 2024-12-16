@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import * as accountService from '../service/account';
-import type { PortofolioAppContext, PortofolioAppState } from '../types/koa';
+import type { portfolioAppContext, portfolioAppState } from '../types/koa';
 import type { KoaContext, KoaRouter } from '../types/koa';
 import type {
   GetAllAccountsResponse,
@@ -153,7 +153,7 @@ createAccountAandeel.validationScheme = {
 };
 
 export default (parent: KoaRouter) => {
-  const router = new Router<PortofolioAppState, PortofolioAppContext>({
+  const router = new Router<portfolioAppState, portfolioAppContext>({
     prefix: '/accounts',
   });
 

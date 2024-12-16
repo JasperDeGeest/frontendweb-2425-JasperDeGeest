@@ -21,7 +21,7 @@ Ik verwacht dat volgende software reeds geïnstalleerd is:
 ## Opstarten
 > Schrijf hier hoe we de applicatie starten (.env bestanden aanmaken, commando's om uit te voeren...)
 - git clone https://github.com/HOGENT-frontendweb/frontendweb-2425-JasperDeGeest.git
-- cd portofolio-frontend
+- cd portfolio-frontend
 - yarn install
 - yarn dev
 

@@ -9,8 +9,8 @@ export default {
   },
   auth: {
     jwt: {
-      audience: 'portofolio.hogent.be',
-      issuer: 'portofolio.hogent.be',
+      audience: 'portfolio.hogent.be',
+      issuer: 'portfolio.hogent.be',
       expirationInterval: 60 * 60, // s (1 hour)
       secret:
         'eenveeltemoeilijksecretdatniemandooitzalradenandersisdesitegehacked',

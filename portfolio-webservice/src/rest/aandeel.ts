@@ -1,5 +1,5 @@
 import * as aandeelService from '../service/aandeel';
-import type { PortofolioAppContext, PortofolioAppState } from '../types/koa';
+import type { portfolioAppContext, portfolioAppState } from '../types/koa';
 import type { KoaContext, KoaRouter } from '../types/koa';
 import type {
   CreateAandeelRequest,
@@ -20,6 +20,7 @@ const getAllAandelen = async (ctx: KoaContext<GetAllAandelenResponse>) => {
     items: aandelen,
   };
 };
+getAllAandelen.validationScheme = null;
 
 const createAandeel = async (ctx: KoaContext<CreateAandeelResponse, void, CreateAandeelRequest>) => {
   const newAandeel = await aandeelService.create({
@@ -28,7 +29,6 @@ const createAandeel = async (ctx: KoaContext<CreateAandeelResponse, void, Create
   ctx.status = 201;
   ctx.body = newAandeel;
 };
-
 createAandeel.validationScheme = {
   body: {
     isin: Joi.string().length(12),
@@ -43,14 +43,7 @@ createAandeel.validationScheme = {
 
 const getAandeelById = async (ctx: KoaContext<GetAandeelByIdResponse, IdParams>) => {
   ctx.body = await aandeelService.getById(Number(ctx.params.id));
-  /*try {
-    ctx.body = await aandeelService.getById(Number(ctx.params.id));
-  } catch (error: any) {
-    ctx.status = 404;
-    ctx.body = error.message;
-  }*/
 };
-
 getAandeelById.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),
@@ -62,27 +55,41 @@ const updateAandeel = async (ctx: KoaContext<UpdateAandeelResponse, IdParams, Up
     ...ctx.request.body,
   });
 };
+updateAandeel.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+  body: {
+    isin: Joi.string().length(12),
+    afkorting: Joi.string().length(4),
+    uitgever: Joi.string(),
+    kosten: Joi.number().max(1).positive(),
+    type: Joi.string(),
+    rating: Joi.number().integer().positive().max(5),
+    sustainability: Joi.number().integer().positive().max(5),
+  },
+};
 
 const deleteAandeel = async (ctx: KoaContext<void, IdParams>) => {
-  try {
-    await aandeelService.deleteById(Number(ctx.params.id));
-    ctx.status = 204;
-  } catch (error: any) {
-    ctx.status = 409;
-    ctx.body = error.message;
-  }
+  await aandeelService.deleteById(Number(ctx.params.id));
+  ctx.status = 204;
+};
+deleteAandeel.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
 };
 
 export default (parent: KoaRouter) => {
-  const router = new Router<PortofolioAppState, PortofolioAppContext>({
+  const router = new Router<portfolioAppState, portfolioAppContext>({
     prefix: '/aandelen',
   });
 
-  router.get('/', getAllAandelen);
+  router.get('/', validate(getAllAandelen.validationScheme),getAllAandelen);
   router.post('/', validate(createAandeel.validationScheme), createAandeel);
   router.get('/:id', validate(getAandeelById.validationScheme), getAandeelById);
-  router.put('/:id', updateAandeel);
-  router.delete('/:id', deleteAandeel);
+  router.put('/:id', validate(updateAandeel.validationScheme),updateAandeel);
+  router.delete('/:id', validate(deleteAandeel.validationScheme),deleteAandeel);
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

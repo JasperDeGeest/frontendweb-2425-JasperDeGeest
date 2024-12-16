@@ -75,6 +75,17 @@ const validate = (scheme: RequestValidationSchemeInput | null) => {
       ctx.request.body = bodyValue;
     }
 
+    const { error: queryErrors, value: queryValue } = parsedSchema.query.validate(
+      ctx.query,
+      JOI_OPTIONS,
+    );
+    
+    if (queryErrors) {
+      errors.set('query', cleanupJoiError(queryErrors));
+    } else {
+      ctx.query = queryValue;
+    }
+
     return next();
   };
 };

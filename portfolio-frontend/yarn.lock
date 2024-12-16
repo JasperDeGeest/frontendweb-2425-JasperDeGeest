@@ -3650,9 +3650,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"portofolio-frontend@workspace:.":
+"portfolio-frontend@workspace:.":
   version: 0.0.0-use.local
-  resolution: "portofolio-frontend@workspace:."
+  resolution: "portfolio-frontend@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.9.0"
     "@stylistic/eslint-plugin": "npm:^2.8.0"

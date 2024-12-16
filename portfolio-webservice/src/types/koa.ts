@@ -5,12 +5,12 @@ import type Router from '@koa/router';
 import type { SessionInfo } from './auth';
 
 // 👇 1
-export interface PortofolioAppState {
+export interface portfolioAppState {
   session: SessionInfo;
 }
 
 // 👇 2
-export interface PortofolioAppContext<
+export interface portfolioAppContext<
   Params = unknown,
   RequestBody = unknown,
   Query = unknown,
@@ -30,14 +30,14 @@ export type KoaContext<
   Query = unknown,
 > = ParameterizedContext<
   // 👇 4
-  PortofolioAppState,
-  PortofolioAppContext<Params, RequestBody, Query>,
+  portfolioAppState,
+  portfolioAppContext<Params, RequestBody, Query>,
   ResponseBody
 >;
 
 // 👇 5
 export interface KoaApplication
-  extends Application<PortofolioAppState, PortofolioAppContext> {}
+  extends Application<portfolioAppState, portfolioAppContext> {}
 
 // 👇 5
-export interface KoaRouter extends Router<PortofolioAppState, PortofolioAppContext> {}
+export interface KoaRouter extends Router<portfolioAppState, portfolioAppContext> {}
