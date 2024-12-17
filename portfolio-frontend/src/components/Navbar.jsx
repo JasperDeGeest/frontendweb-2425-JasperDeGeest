@@ -2,7 +2,7 @@
 import { NavLink, Link } from 'react-router-dom';
 //import { useContext } from 'react'; // 👈 1
 //import { ThemeContext } from '../contexts/Theme.context'; // 👈 1
-import { useTheme } from '../contexts/theme'; // 👈 1
+import { useTheme } from '../contexts/Theme'; // 👈 1
 import { IoMoonSharp, IoSunny } from 'react-icons/io5'; // 👈 4
 import { useAuth } from '../contexts/auth'; // 👈 2
 
