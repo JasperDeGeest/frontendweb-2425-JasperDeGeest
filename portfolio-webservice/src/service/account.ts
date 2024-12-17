@@ -32,7 +32,7 @@ export const login = async (
 
   // 👇 3
   if (!account) {
-    // DO NOT expose we don't know the user
+    // DO NOT expose we don't know the account
     throw ServiceError.unauthorized(
       'The given email and password do not match',
     );
@@ -43,7 +43,7 @@ export const login = async (
 
   // 👇 5
   if (!passwordValid) {
-    // DO NOT expose we know the user but an invalid password was given
+    // DO NOT expose we know the account but an invalid password was given
     throw ServiceError.unauthorized(
       'The given email and password do not match',
     );
@@ -113,7 +113,7 @@ const makeExposedAccount = ({ id, email, voornaam, achternaam }: Account): Publi
 });
 
 export const getAll = async (): Promise<PublicAccount[]> => {
-  const users = await prisma.account.findMany({
+  const accounts = await prisma.account.findMany({
     include: {
       adres: {
         select: {
@@ -126,7 +126,7 @@ export const getAll = async (): Promise<PublicAccount[]> => {
       },
     },
   });
-  return users.map(makeExposedAccount);
+  return accounts.map(makeExposedAccount);
 };
 
 export const getById = async (id: number): Promise<Account> => {
@@ -165,11 +165,9 @@ export const register = async ({
 }: RegisterAccountRequest): Promise<string> => {
   try {
     const passwordHash = await hashPassword(password);
-
     const newAdres = await prisma.adres.create({
       data : adres,
     });
-  
     const account = await prisma.account.create({
       data: {
         email,
@@ -181,20 +179,13 @@ export const register = async ({
         adres: {
           connect: { id: newAdres.id },
         },
-        roles: Role.USER,
+        roles: JSON.stringify([Role.USER]),
       },
       include: {
         adres: true,
       },
     });
-
-    if (!account) {
-      throw ServiceError.internalServerError(
-        'An unexpected error occured when creating the user',
-      );
-    }
-
-    return await generateJWT(account); // 👈 1
+    return await generateJWT(account);
   } catch (error) {
     throw handleDBError(error);
   }
@@ -230,7 +221,7 @@ export const getAandelenByAccountId = async (accountId: number): Promise<Account
   });
 
   if(accountAandelen.length < 1) {
-    throw new Error('this account has no aandelen.');
+    throw ServiceError.notFound('this account has no aandelen.');
   }
   return accountAandelen;
 };

@@ -1,4 +1,3 @@
-// src/core/validation.ts
 import type { Schema, SchemaLike } from 'joi';
 import Joi from 'joi';
 import type { KoaContext } from '../types/koa';
@@ -38,7 +37,6 @@ const cleanupJoiError = (error: Joi.ValidationError) => {
 };
 
 const validate = (scheme: RequestValidationSchemeInput | null) => {
-  
   const parsedSchema: RequestValidationScheme = {
     body: Joi.object(scheme?.body || {}),
     params: Joi.object(scheme?.params || {}),
@@ -46,22 +44,15 @@ const validate = (scheme: RequestValidationSchemeInput | null) => {
   };
 
   return (ctx: KoaContext, next: Next) => {
-    const errors = new Map(); // 👈 5
-    
+    const errors = new Map();
+
     const { error: paramsErrors, value: paramsValue } =
       parsedSchema.params.validate(ctx.params, JOI_OPTIONS);
-    
+
     if (paramsErrors) {
       errors.set('params', cleanupJoiError(paramsErrors));
     } else {
       ctx.params = paramsValue;
-    }
-
-    if (errors.size > 0) {
-      ctx.throw(400, 'Validation failed, check details for more information', {
-        code: 'VALIDATION_FAILED',
-        details: Object.fromEntries(errors),
-      });
     }
 
     const { error: bodyErrors, value: bodyValue } = parsedSchema.body.validate(
@@ -84,6 +75,13 @@ const validate = (scheme: RequestValidationSchemeInput | null) => {
       errors.set('query', cleanupJoiError(queryErrors));
     } else {
       ctx.query = queryValue;
+    }
+
+    if (errors.size > 0) {
+      ctx.throw(400, 'Validation failed, check details for more information', {
+        code: 'VALIDATION_FAILED',
+        details: Object.fromEntries(errors),
+      });
     }
 
     return next();

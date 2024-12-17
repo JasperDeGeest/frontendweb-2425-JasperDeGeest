@@ -47,8 +47,7 @@ export interface RegisterAccountRequest {
   adres: Adres;
 }
 export interface UpdateAccountRequest extends 
-  Pick<RegisterAccountRequest, 'email' | 'onbelegdVermogen' | 
-  'rijksregisterNummer' | 'voornaam' | 'achternaam' | 'adres'> {}
+  Pick<RegisterAccountRequest, 'email' | 'rijksregisterNummer' | 'voornaam' | 'achternaam' | 'adres'> {}
 
 export interface GetAllAccountsResponse extends ListResponse<PublicAccount> {}
 export interface GetAccountByIdResponse extends PublicAccount {}

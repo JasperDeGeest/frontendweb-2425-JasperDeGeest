@@ -23,7 +23,7 @@ export const getById = async (id: number): Promise<Aandeel> => {
 
 export const create = async (aandeel: AandeelCreateInput): Promise<Aandeel> => {
   try {
-    return prisma.aandeel.create({
+    return await prisma.aandeel.create({
       data: aandeel,
     });
   } catch (error: any) {
@@ -32,12 +32,16 @@ export const create = async (aandeel: AandeelCreateInput): Promise<Aandeel> => {
 };
 
 export const updateById = async (id: number, changes: AandeelUpdateInput): Promise<Aandeel> => {
-  return prisma.aandeel.update({
-    where: {
-      id,
-    },
-    data: changes,
-  });
+  try {
+    return await prisma.aandeel.update({
+      where: {
+        id,
+      },
+      data: changes,
+    });
+  } catch (error: any) {
+    throw handleDBError(error);
+  }
 };
 
 export const deleteById = async (id: number): Promise<void> => {

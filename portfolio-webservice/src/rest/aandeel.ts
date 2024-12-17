@@ -85,11 +85,31 @@ export default (parent: KoaRouter) => {
     prefix: '/aandelen',
   });
 
-  router.get('/', validate(getAllAandelen.validationScheme),getAllAandelen);
-  router.post('/', validate(createAandeel.validationScheme), createAandeel);
-  router.get('/:id', validate(getAandeelById.validationScheme), getAandeelById);
-  router.put('/:id', validate(updateAandeel.validationScheme),updateAandeel);
-  router.delete('/:id', validate(deleteAandeel.validationScheme),deleteAandeel);
+  router.get(
+    '/',
+    validate(getAllAandelen.validationScheme),
+    getAllAandelen,
+  );
+  router.post(
+    '/', 
+    validate(createAandeel.validationScheme), 
+    createAandeel,
+  );
+  router.get(
+    '/:id', 
+    validate(getAandeelById.validationScheme), 
+    getAandeelById,
+  );
+  router.put(
+    '/:id', 
+    validate(updateAandeel.validationScheme),
+    updateAandeel,
+  );
+  router.delete(
+    '/:id', 
+    validate(deleteAandeel.validationScheme),
+    deleteAandeel,
+  );
 
   parent.use(router.routes()).use(router.allowedMethods());
 };

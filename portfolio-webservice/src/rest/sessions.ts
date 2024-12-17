@@ -14,15 +14,12 @@ import { authDelay } from '../core/auth'; // 👈
 
 // 👇 1
 const login = async (ctx: KoaContext<LoginResponse, void, LoginRequest>) => {
-  // 👇 2
   const { email, password } = ctx.request.body;
   const token = await accountService.login(email, password); // 👈 3
 
-  // 👇 4
   ctx.status = 200;
   ctx.body = { token };
 };
-// 👇 5
 login.validationScheme = {
   body: {
     email: Joi.string().email(),
@@ -30,7 +27,6 @@ login.validationScheme = {
   },
 };
 
-// 👇 6
 export default function installSessionRouter(parent: KoaRouter) {
   const router = new Router<portfolioAppState, portfolioAppContext>({
     prefix: '/sessions',

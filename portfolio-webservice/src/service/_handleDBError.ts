@@ -1,10 +1,11 @@
 // src/service/_handleDBError.ts
-import ServiceError from '../core/serviceError'; // 👈 2
+import ServiceError from '../core/serviceError';
 
-// 👇 1
 const handleDBError = (error: any) => {
-  // 👇 3
+
   const { code = '', message } = error;
+  console.log('message', message);
+  console.log('code', code);
 
   if (code === 'P2002') {
     switch (true) {
@@ -53,4 +54,4 @@ const handleDBError = (error: any) => {
   throw error;
 };
 
-export default handleDBError; // 👈 1
+export default handleDBError;

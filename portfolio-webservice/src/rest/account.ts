@@ -50,12 +50,10 @@ getAllAccounts.validationScheme = null;
 const registerAccount = async (
   ctx: KoaContext<LoginResponse, void, RegisterAccountRequest>,
 ) => {
-  console.log(ctx.request.body);
   const token = await accountService.register(ctx.request.body);
-  ctx.status = 201;
+  ctx.status = 200;
   ctx.body = { token };
 };
-
 registerAccount.validationScheme = {
   body: {
     email: Joi.string().email(),
@@ -76,7 +74,6 @@ registerAccount.validationScheme = {
 const getAccountById = async (
   ctx: KoaContext<GetAccountByIdResponse, GetAccountRequest>, // 👈
 ) => {
-  // 👇
   const account = await accountService.getById(
     ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id,
   );
@@ -85,7 +82,6 @@ const getAccountById = async (
 };
 getAccountById.validationScheme = {
   params: {
-    // 👇
     id: Joi.alternatives().try(
       Joi.number().integer().positive(),
       Joi.string().valid('me'),
@@ -107,31 +103,60 @@ updateAccount.validationScheme = {
       Joi.string().valid('me'),
     ),
   },
+  body: {
+    email: Joi.string().email(),
+    rijksregisterNummer: Joi.number().min(10000000000).max(99999999999),
+    voornaam: Joi.string().max(255),
+    achternaam: Joi.string().max(255),
+    adres: Joi.object({
+      straat: Joi.string().max(255),
+      huisNummer: Joi.string().max(255),
+      stad: Joi.string().max(255),
+      land: Joi.string().max(255),
+    }),
+  },
 };
 
 const getAandelenByAccountId = async (ctx: KoaContext<GetAllAccountAandelenResponse, GetAccountAandelenRequest>) => {
-  //try {
   const accountAandelen = await accountService.getAandelenByAccountId(
     ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id,
   );
-
   ctx.body = {
     items: accountAandelen,
   };
-  /*} catch (error: any) {
-    ctx.body = error.message;
-    ctx.status = 404;
-  }*/
+};
+getAandelenByAccountId.validationScheme = {
+  params: {
+    id: Joi.alternatives().try(
+      Joi.number().integer().positive(),
+      Joi.string().valid('me'),
+    ),
+  },
 };
 
 const updateAccountAandeel = async (ctx: KoaContext<UpdateAccountAandeelResponse, 
   IdParams, UpdateAccountAandeelRequest>) => {
   const accountAandeel = await accountService.updateAccountAandeel(
     ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id, 
-    Number(ctx.params.aandeelId),
+    ctx.params.aandeelId,
     ctx.request.body);
   ctx.status = 200;
   ctx.body = accountAandeel;
+};
+updateAccountAandeel.validationScheme = {
+  params: {
+    id: Joi.alternatives().try(
+      Joi.number().integer().positive(),
+      Joi.string().valid('me'),
+    ),
+    aandeelId: Joi.number().integer().positive(),
+  },
+  body: {
+    aantal: Joi.number().integer().positive(),
+    aankoopPrijs: Joi.number().positive(),
+    reden: Joi.string(),
+    geschatteDuur: Joi.string(),
+  },
 };
 
 const createAccountAandeel = async (ctx: KoaContext<CreateAccountAandeelResponse, 
@@ -144,11 +169,52 @@ const createAccountAandeel = async (ctx: KoaContext<CreateAccountAandeelResponse
   ctx.status = 201;
   ctx.body = newAccountAandeel;
 };
-
 createAccountAandeel.validationScheme = {
+  params: {
+    id: Joi.alternatives().try(
+      Joi.number().integer().positive(),
+      Joi.string().valid('me'),
+    ),
+  },
   body: {
     aandeelId: Joi.number().integer().positive(),
     aantal: Joi.number().integer().positive(),
+    aankoopPrijs: Joi.number().positive(),
+    reden: Joi.string(),
+    geschatteDuur: Joi.string(),
+  },
+};
+
+const getAccountAandeelById = async (ctx: KoaContext<getAccountAandeelByIdResponse, IdParams>) => {
+  const accountAandeel = await accountService.getAccountAandeelById(
+    ctx.state.session.accountId,
+    ctx.params.aandeelId);
+  ctx.status = 200;
+  ctx.body = accountAandeel; 
+};
+getAccountAandeelById.validationScheme = {
+  params: {
+    id: Joi.alternatives().try(
+      Joi.number().integer().positive(),
+      Joi.string().valid('me'),
+    ),
+    aandeelId: Joi.number().integer().positive(),
+  },
+};
+
+const deleteAccountAandeel = async (ctx: KoaContext<void, IdParams>) => {
+  await accountService.deleteAccountAandeel(
+    ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id, 
+    ctx.params.aandeelId);
+  ctx.status = 204;
+};
+deleteAccountAandeel.validationScheme = {
+  params: {
+    id: Joi.alternatives().try(
+      Joi.number().integer().positive(),
+      Joi.string().valid('me'),
+    ),
+    aandeelId: Joi.number().integer().positive(),
   },
 };
 
@@ -156,21 +222,6 @@ export default (parent: KoaRouter) => {
   const router = new Router<portfolioAppState, portfolioAppContext>({
     prefix: '/accounts',
   });
-
-  const getAccountAandeelById = async (ctx: KoaContext<getAccountAandeelByIdResponse, IdParams>) => {
-    const accountAandeel = await accountService.getAccountAandeelById(
-      ctx.state.session.accountId,
-      ctx.params.aandeelId);
-    ctx.status = 200;
-    ctx.body = accountAandeel; 
-  };
-
-  const deleteAccountAandeel = async (ctx: KoaContext<void, IdParams>) => {
-    await accountService.deleteAccountAandeel(
-      ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id, 
-      ctx.params.aandeelId);
-    ctx.status = 204;
-  };
 
   router.post('/', authDelay, validate(registerAccount.validationScheme),registerAccount);
 
@@ -199,33 +250,35 @@ export default (parent: KoaRouter) => {
   router.get(
     '/:id/aandelen',
     requireAuthentication,
-    checkAccountId, 
+    checkAccountId,
+    validate(getAandelenByAccountId.validationScheme), 
     getAandelenByAccountId,
   );
   router.put(
     '/:id/aandelen/:aandeelId',
     requireAuthentication,
     checkAccountId,
-    //validate(updateAccountAandeel.validationScheme),
+    validate(updateAccountAandeel.validationScheme),
     updateAccountAandeel,
   );
   router.get(
     '/:id/aandelen/:aandeelId',
     requireAuthentication,
     checkAccountId,
-    //validate(updateAccountAandeel.validationScheme),
+    validate(getAccountAandeelById.validationScheme),
     getAccountAandeelById,
   );
   router.post(
     '/:id/aandelen',
     requireAuthentication,
-    //validate(createAccountAandeel.validationScheme),
+    validate(createAccountAandeel.validationScheme),
     createAccountAandeel,
   );
   router.delete(
     '/:id/aandelen/:aandeelId',
     requireAuthentication,
     checkAccountId,
+    validate(deleteAccountAandeel.validationScheme),
     deleteAccountAandeel,
   );
 
