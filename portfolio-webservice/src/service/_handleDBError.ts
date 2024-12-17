@@ -6,16 +6,19 @@ const handleDBError = (error: any) => {
   const { code = '', message } = error;
   console.log('message', message);
   console.log('code', code);
-
   if (code === 'P2002') {
     switch (true) {
-      case message.includes('idx_place_name_unique'):
+      case message.includes('idx_account_email_unique'):
         throw ServiceError.validationFailed(
-          'A place with this name already exists',
+          'An account with this email address already exists',
         );
-      case message.includes('idx_user_email_unique'):
+      case message.includes('idx_aandeel_isin_unique'):
         throw ServiceError.validationFailed(
-          'There is already a user with this email address',
+          'An aandeel with this ISIN already exists',
+        );
+      case message.includes('idx_aandeel_afkorting_unique'):
+        throw ServiceError.validationFailed(
+          'An aandeel with this abbreviation already exists',
         );
       default:
         throw ServiceError.validationFailed('This item already exists');
@@ -24,28 +27,28 @@ const handleDBError = (error: any) => {
 
   if (code === 'P2025') {
     switch (true) {
-      case message.includes('fk_transaction_user'):
-        throw ServiceError.notFound('This user does not exist');
-      case message.includes('fk_transaction_place'):
-        throw ServiceError.notFound('This place does not exist');
-      case message.includes('transaction'):
-        throw ServiceError.notFound('No transaction with this id exists');
-      case message.includes('place'):
-        throw ServiceError.notFound('No place with this id exists');
-      case message.includes('user'):
-        throw ServiceError.notFound('No user with this id exists');
+      case message.includes('fk_accountAandeel_account'):
+        throw ServiceError.notFound('This account does not exist');
+      case message.includes('fk_accountAandeel_aandeel'):
+        throw ServiceError.notFound('This aandeel does not exist');
+      case message.includes('aandeel'):
+        throw ServiceError.notFound('No aandeel with this id exists');
+      case message.includes('account'):
+        throw ServiceError.notFound('No account with this id exists');
+      case message.includes('accountAandeel'):
+        throw ServiceError.notFound('No accountAandeel with this id exists');
     }
   }
 
   if (code === 'P2003') {
     switch (true) {
-      case message.includes('place_id'):
+      case message.includes('aandeelId'):
         throw ServiceError.conflict(
-          'This place does not exist or is still linked to transactions',
+          'This aandeel does not exist or is still linked to accountAandeel',
         );
-      case message.includes('user_id'):
+      case message.includes('accountId'):
         throw ServiceError.conflict(
-          'This user does not exist or is still linked to transactions',
+          'This account does not exist or is still linked to accountAandeel',
         );
     }
   }

@@ -17,6 +17,19 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
+axios.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem(JWT_TOKEN_KEY);
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  },
+);
+
 // 👇 2
 export async function getAll(url) {
   const { data } = await axios.get(url); // 👈 2

@@ -45,17 +45,13 @@ export const updateById = async (id: number, changes: AandeelUpdateInput): Promi
 };
 
 export const deleteById = async (id: number): Promise<void> => {
-  const relatedAccountAandelen = await prisma.accountAandeel.findMany({
-    where: { aandeelId: id },
-  });
-
-  if(relatedAccountAandelen.length > 0) {
-    throw new Error('cannot delete this aandeel because people own it.');
+  try {
+    await prisma.aandeel.delete({
+      where: {
+        id,
+      },
+    });
+  } catch (error: any) {
+    throw handleDBError(error);
   }
-  
-  await prisma.aandeel.delete({
-    where: {
-      id,
-    },
-  });
 };

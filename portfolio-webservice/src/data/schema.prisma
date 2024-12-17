@@ -24,7 +24,7 @@ model Adres {
 
 model Account {
   id                    Int       @id @default(autoincrement()) @db.UnsignedInt
-  email                 String    @unique(map: "idx_user_email_unique") @db.VarChar(255)
+  email                 String    @unique(map: "idx_account_email_unique") @db.VarChar(255)
   hashedPassword        String    @db.VarChar(255)
   onbelegdVermogen      Float     @db.Float
   rijksregisterNummer   Float     @db.Float
@@ -38,8 +38,8 @@ model Account {
 
 model Aandeel {
   id                Int       @id @default(autoincrement()) @db.UnsignedInt
-  isin              String    @unique @db.VarChar(20)
-  afkorting         String    @db.VarChar(20)
+  isin              String    @unique(map: "idx_aandeel_isin_unique") @db.VarChar(20)
+  afkorting         String    @unique(map: "idx_aandeel_afkorting_unique") @db.VarChar(20)
   uitgever          String    @db.VarChar(100)
   kosten            Float     @db.Float
   type              String    @db.VarChar(50)
