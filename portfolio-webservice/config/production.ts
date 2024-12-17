@@ -1,4 +1,5 @@
 export default {
+  port: 9000,
   log: {
     level: 'info',
     disabled: false,
@@ -12,14 +13,11 @@ export default {
       audience: 'portfolio.hogent.be',
       issuer: 'portfolio.hogent.be',
       expirationInterval: 60 * 60, // s (1 hour)
-      secret:
-        'eenveeltemoeilijksecretdatniemandooitzalradenandersisdesitegehacked',
     },
     argon: {
       hashLength: 32,
       timeCost: 6,
       memoryCost: 2 ** 17,
     },
-    maxDelay: 5000,
   },
 };

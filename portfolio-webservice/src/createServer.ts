@@ -1,4 +1,3 @@
-// src/createServer.ts
 import Koa from 'koa';
 
 import { getLogger } from './core/logging';
@@ -9,16 +8,17 @@ import type {
   KoaApplication,
   portfolioAppContext,
   portfolioAppState,
-} from './types/koa'; // 👈 1
+} from './types/koa';
+import config from 'config';
 
-// 👇 1
+const PORT = config.get<number>('port');
+
 export interface Server {
   getApp(): KoaApplication;
   start(): Promise<void>;
   stop(): Promise<void>;
 }
 
-// 👇 2
 export default async function createServer(): Promise<Server> {
   const app = new Koa<portfolioAppState, portfolioAppContext>();
 
@@ -26,7 +26,6 @@ export default async function createServer(): Promise<Server> {
   await initializeData();
   installRest(app);
 
-  // 👇 3
   return {
     getApp() {
       return app;
@@ -34,10 +33,9 @@ export default async function createServer(): Promise<Server> {
 
     start() {
       return new Promise<void>((resolve) => {
-        app.listen(9000, () => {
-          getLogger().info('🚀 Server listening on http://localhost:9000');
-          resolve();
-        });
+        app.listen(PORT);
+        getLogger().info(`🚀 Server listening on http://localhost:${PORT}`);
+        resolve();
       });
     },
 

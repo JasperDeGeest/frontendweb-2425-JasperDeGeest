@@ -1,4 +1,5 @@
 export default {
+  port: 9000,
   log: {
     level: 'silly',
     disabled: false,

@@ -1,4 +1,5 @@
 export default {
+  port: 9000,
   log: {
     level: 'silly',
     disabled: false,
@@ -20,6 +21,5 @@ export default {
       timeCost: 6,
       memoryCost: 2 ** 17,
     },
-    maxDelay: 5000,
   },
 };
