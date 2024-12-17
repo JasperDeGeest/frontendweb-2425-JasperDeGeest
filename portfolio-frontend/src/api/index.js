@@ -1,7 +1,7 @@
 import axiosRoot from 'axios'; // 👈 1
 import { JWT_TOKEN_KEY } from '../contexts/Auth.context';
 
-const baseUrl = 'http://localhost:9000/api'; // 👈 1
+const baseUrl = import.meta.env.VITE_API_URL;; // 👈 1
 
 export const axios = axiosRoot.create({
   baseURL: baseUrl,
