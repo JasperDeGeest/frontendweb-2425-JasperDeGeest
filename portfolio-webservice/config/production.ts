@@ -5,7 +5,7 @@ export default {
     disabled: false,
   },
   cors: {
-    origins: ['http://localhost:5173'],
+    origins: ['https://frontendweb-budget-dna5.onrender.com'],
     maxAge: 3 * 60 * 60,
   },
   auth: {
