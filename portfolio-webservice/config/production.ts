@@ -5,7 +5,7 @@ export default {
     disabled: false,
   },
   cors: {
-    origins: ['https://frontendweb-2425-jasperdegeest.onrender.com'],
+    origins: ['https://frontendweb-2425-jasperdegeest-frontend.onrender.com'],
     maxAge: 3 * 60 * 60,
   },
   auth: {
