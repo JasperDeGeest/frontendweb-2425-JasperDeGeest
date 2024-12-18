@@ -14,12 +14,14 @@
     "migrate:dev": "prisma migrate dev",
     "migrate:test": "env-cmd -f .env.test prisma migrate dev --skip-seed",
     "test": "env-cmd -f .env.test jest --runInBand",
-    "test:coverage": "env-cmd -f .env.test jest --runInBand --coverage"
+    "test:coverage": "env-cmd -f .env.test jest --runInBand --coverage",
+    "apidoc": "apidoc -i src -o apidoc"
   },
   "dependencies": {
     "@koa/cors": "^5.0.0",
     "@koa/router": "^13.1.0",
     "@prisma/client": "^5.22.0",
+    "apidoc": "^1.2.0",
     "argon2": "^0.41.1",
     "config": "^3.3.12",
     "helmet": "^8.0.0",

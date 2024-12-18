@@ -41,12 +41,51 @@ const checkAccountId = (ctx: KoaContext<unknown, GetAccountRequest>, next: Next)
   return next();
 };
 
+/**
+ * @api {get} /accounts Get all accounts
+ * @apiName GetAllAccounts
+ * @apiGroup Account
+ * @apiSuccess {Object[]} items List of accounts.
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "items": [
+ *       {
+ *         "id": 1,
+ *         "email": "example@example.com",
+ *         "voornaam": "John",
+ *         "achternaam": "Doe"
+ *       }
+ *     ]
+ *   }
+ * @apiError (Error 500) {Object} INTERNAL_SERVER_ERROR Internal server error.
+ */
 const getAllAccounts = async (ctx: KoaContext<GetAllAccountsResponse>) => {
   const accounts = await accountService.getAll();
   ctx.body = { items: accounts };
 };
 getAllAccounts.validationScheme = null;
 
+/**
+ * @api {post} /accounts Register a new account
+ * @apiName RegisterAccount
+ * @apiGroup Account
+ * @apiParam (Body) {String} email Email of the account.
+ * @apiParam (Body) {String} password Password of the account.
+ * @apiParam (Body) {Number} onbelegdVermogen Uninvested capital of the account.
+ * @apiParam (Body) {Number} rijksregisterNummer National register number of the account.
+ * @apiParam (Body) {String} voornaam First name of the account.
+ * @apiParam (Body) {String} achternaam Last name of the account.
+ * @apiParam (Body) {Object} adres Address of the account.
+ * @apiSuccess {String} token Authentication token.
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "token": "jwt-token"
+ *   }
+ * @apiError (Error 400) {Object} VALIDATION_FAILED Validation failed.
+ * @apiError (Error 500) {Object} INTERNAL_SERVER_ERROR Internal server error.
+ */
 const registerAccount = async (
   ctx: KoaContext<LoginResponse, void, RegisterAccountRequest>,
 ) => {
@@ -71,6 +110,23 @@ registerAccount.validationScheme = {
   },
 };
 
+/**
+ * @api {get} /accounts/:id Get account by ID
+ * @apiName GetAccountById
+ * @apiGroup Account
+ * @apiParam (URL) {Number} id Account's unique ID.
+ * @apiSuccess {Object} account The account with the specified ID.
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "id": 1,
+ *     "email": "example@example.com",
+ *     "voornaam": "John",
+ *     "achternaam": "Doe"
+ *   }
+ * @apiError (Error 404) {Object} NOT_FOUND No account with this ID exists.
+ * @apiError (Error 500) {Object} INTERNAL_SERVER_ERROR Internal server error.
+ */
 const getAccountById = async (
   ctx: KoaContext<GetAccountByIdResponse, GetAccountRequest>, // 👈
 ) => {
@@ -89,6 +145,29 @@ getAccountById.validationScheme = {
   },
 };
 
+/**
+ * @api {put} /accounts/:id Update account by ID
+ * @apiName UpdateAccount
+ * @apiGroup Account
+ * @apiParam (URL) {Number} id Account's unique ID.
+ * @apiParam (Body) {String} email Email of the account.
+ * @apiParam (Body) {Number} rijksregisterNummer National register number of the account.
+ * @apiParam (Body) {String} voornaam First name of the account.
+ * @apiParam (Body) {String} achternaam Last name of the account.
+ * @apiParam (Body) {Object} adres Address of the account.
+ * @apiSuccess {Object} account The updated account.
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "id": 1,
+ *     "email": "example@example.com",
+ *     "voornaam": "John",
+ *     "achternaam": "Doe"
+ *   }
+ * @apiError (Error 400) {Object} VALIDATION_FAILED Validation failed.
+ * @apiError (Error 404) {Object} NOT_FOUND No account with this ID exists.
+ * @apiError (Error 500) {Object} INTERNAL_SERVER_ERROR Internal server error.
+ */
 const updateAccount = async (ctx: KoaContext<UpdateAccountResponse, IdParams, UpdateAccountRequest>) => {
   const account = await accountService.updateById(
     ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id, 
@@ -117,6 +196,28 @@ updateAccount.validationScheme = {
   },
 };
 
+/**
+ * @api {get} /accounts/:id/aandelen Get aandelen by account ID
+ * @apiName GetAandelenByAccountId
+ * @apiGroup Account
+ * @apiParam (URL) {Number} id Account's unique ID.
+ * @apiSuccess {Object[]} items List of account aandelen.
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "items": [
+ *       {
+ *         "id": 1,
+ *         "aantal": 10,
+ *         "aankoopPrijs": 100.0,
+ *         "reden": "Investment",
+ *         "geschatteDuur": "Long-term"
+ *       }
+ *     ]
+ *   }
+ * @apiError (Error 404) {Object} NOT_FOUND No account with this ID exists.
+ * @apiError (Error 500) {Object} INTERNAL_SERVER_ERROR Internal server error.
+ */
 const getAandelenByAccountId = async (ctx: KoaContext<GetAllAccountAandelenResponse, GetAccountAandelenRequest>) => {
   const accountAandelen = await accountService.getAandelenByAccountId(
     ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id,
@@ -134,6 +235,30 @@ getAandelenByAccountId.validationScheme = {
   },
 };
 
+/**
+ * @api {put} /accounts/:id/aandelen/:aandeelId Update account aandeel by ID
+ * @apiName UpdateAccountAandeel
+ * @apiGroup Account
+ * @apiParam (URL) {Number} id Account's unique ID.
+ * @apiParam (URL) {Number} aandeelId Aandeel's unique ID.
+ * @apiParam (Body) {Number} aantal Number of aandelen.
+ * @apiParam (Body) {Number} aankoopPrijs Purchase price of the aandeel.
+ * @apiParam (Body) {String} reden Reason for the purchase.
+ * @apiParam (Body) {String} geschatteDuur Estimated duration of the investment.
+ * @apiSuccess {Object} accountAandeel The updated account aandeel.
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "id": 1,
+ *     "aantal": 10,
+ *     "aankoopPrijs": 100.0,
+ *     "reden": "Investment",
+ *     "geschatteDuur": "Long-term"
+ *   }
+ * @apiError (Error 400) {Object} VALIDATION_FAILED Validation failed.
+ * @apiError (Error 404) {Object} NOT_FOUND No account aandeel with this ID exists.
+ * @apiError (Error 500) {Object} INTERNAL_SERVER_ERROR Internal server error.
+ */
 const updateAccountAandeel = async (ctx: KoaContext<UpdateAccountAandeelResponse, 
   IdParams, UpdateAccountAandeelRequest>) => {
   const accountAandeel = await accountService.updateAccountAandeel(
@@ -159,6 +284,28 @@ updateAccountAandeel.validationScheme = {
   },
 };
 
+/**
+ * @api {post} /accounts/:id/aandelen Create a new account aandeel
+ * @apiName CreateAccountAandeel
+ * @apiGroup Account
+ * @apiParam (Body) {Number} aandeelId Aandeel's unique ID.
+ * @apiParam (Body) {Number} aantal Number of aandelen.
+ * @apiParam (Body) {Number} aankoopPrijs Purchase price of the aandeel.
+ * @apiParam (Body) {String} reden Reason for the purchase.
+ * @apiParam (Body) {String} geschatteDuur Estimated duration of the investment.
+ * @apiSuccess {Object} newAccountAandeel The newly created account aandeel.
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 201 Created
+ *   {
+ *     "id": 1,
+ *     "aantal": 10,
+ *     "aankoopPrijs": 100.0,
+ *     "reden": "Investment",
+ *     "geschatteDuur": "Long-term"
+ *   }
+ * @apiError (Error 400) {Object} VALIDATION_FAILED Validation failed.
+ * @apiError (Error 500) {Object} INTERNAL_SERVER_ERROR Internal server error.
+ */
 const createAccountAandeel = async (ctx: KoaContext<CreateAccountAandeelResponse, 
   void, CreateAccountAandeelRequest>) => {
   console.log(ctx.state.session);
@@ -185,6 +332,25 @@ createAccountAandeel.validationScheme = {
   },
 };
 
+/**
+ * @api {get} /accounts/:id/aandelen/:aandeelId Get account aandeel by ID
+ * @apiName GetAccountAandeelById
+ * @apiGroup Account
+ * @apiParam (URL) {Number} id Account's unique ID.
+ * @apiParam (URL) {Number} aandeelId Aandeel's unique ID.
+ * @apiSuccess {Object} accountAandeel The account aandeel with the specified ID.
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "id": 1,
+ *     "aantal": 10,
+ *     "aankoopPrijs": 100.0,
+ *     "reden": "Investment",
+ *     "geschatteDuur": "Long-term"
+ *   }
+ * @apiError (Error 404) {Object} NOT_FOUND No account aandeel with this ID exists.
+ * @apiError (Error 500) {Object} INTERNAL_SERVER_ERROR Internal server error.
+ */
 const getAccountAandeelById = async (ctx: KoaContext<getAccountAandeelByIdResponse, IdParams>) => {
   const accountAandeel = await accountService.getAccountAandeelById(
     ctx.state.session.accountId,
@@ -202,6 +368,16 @@ getAccountAandeelById.validationScheme = {
   },
 };
 
+/**
+ * @api {delete} /accounts/:id/aandelen/:aandeelId Delete account aandeel by ID
+ * @apiName DeleteAccountAandeel
+ * @apiGroup Account
+ * @apiParam (URL) {Number} id Account's unique ID.
+ * @apiParam (URL) {Number} aandeelId Aandeel's unique ID.
+ * @apiSuccess (204) No Content.
+ * @apiError (Error 404) {Object} NOT_FOUND No account aandeel with this ID exists.
+ * @apiError (Error 500) {Object} INTERNAL_SERVER_ERROR Internal server error.
+ */
 const deleteAccountAandeel = async (ctx: KoaContext<void, IdParams>) => {
   await accountService.deleteAccountAandeel(
     ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id, 
