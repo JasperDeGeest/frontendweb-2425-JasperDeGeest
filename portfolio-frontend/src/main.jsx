@@ -18,6 +18,7 @@ import AccountAandeelList from './components/accountAandeel/AccountAandeelList.j
 import AddOrEditAccountAandelen from './pages/accountAandelen/AddOrEditAccountAandelen.jsx';
 import Register from './pages/Register.jsx';
 import PrivateGuard from './components/PrivateGuard.jsx';
+import { ChakraProvider } from '@chakra-ui/react';
 
 const router = createBrowserRouter([
   {
@@ -131,10 +132,12 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthProvider>
-      <ThemeProvider>
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </AuthProvider>
+    <ChakraProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </AuthProvider>
+    </ChakraProvider>
   </React.StrictMode>,
 );
