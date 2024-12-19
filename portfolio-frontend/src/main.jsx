@@ -22,8 +22,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 
 const router = createBrowserRouter([
   {
-    element: <Layout />, // 👈
-    // 👇
+    element: <Layout />,
     children: [
       {
         path: '/',
@@ -31,7 +30,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/aandelen',
-        element: <PrivateRoute />, // 👈
+        element: <PrivateRoute />,
         children: [
           {
             index: true,

@@ -1,6 +1,13 @@
-import { useFormContext } from 'react-hook-form'; // 👈
+import { useFormContext } from 'react-hook-form';
+import {
+  FormControl,
+  FormLabel,
+  Select,
+  FormErrorMessage,
+} from '@chakra-ui/react';
 
 export default function SelectList({
+  mb,
   label,
   name,
   options,
@@ -10,19 +17,16 @@ export default function SelectList({
   const {
     register,
     formState: { errors, isSubmitting },
-  } = useFormContext(); // 👈
+  } = useFormContext();
 
   const hasError = name in errors;
 
   return (
-    <div className='mb-3'>
-      <label htmlFor={name} className='form-label'>
-        {label}
-      </label>
-      <select
+    <FormControl isInvalid={hasError} mb={mb}>
+      <FormLabel>{label}</FormLabel>
+      <Select
         {...register(name, validationRules)}
         id={name}
-        className='form-control'
         disabled={isSubmitting}
         {...rest}
       >
@@ -31,10 +35,10 @@ export default function SelectList({
             {option.label}
           </option>
         ))}
-      </select>
+      </Select>
       {hasError ? (
-        <div className='form-text text-danger' data-cy='select-input-error'>{errors[name].message}</div>
+        <FormErrorMessage data-cy='select-input-error'>{errors[name].message}</FormErrorMessage>
       ) : null}
-    </div>
+    </FormControl>
   );
 }

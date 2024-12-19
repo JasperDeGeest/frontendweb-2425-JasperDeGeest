@@ -1,7 +1,7 @@
-import axiosRoot from 'axios'; // 👈 1
+import axiosRoot from 'axios';
 import { JWT_TOKEN_KEY } from '../contexts/Auth.context';
 
-const baseUrl = import.meta.env.VITE_API_URL;; // 👈 1
+const baseUrl = import.meta.env.VITE_API_URL;
 
 export const axios = axiosRoot.create({
   baseURL: baseUrl,
@@ -30,19 +30,16 @@ axios.interceptors.response.use(
   },
 );
 
-// 👇 2
 export async function getAll(url) {
-  const { data } = await axios.get(url); // 👈 2
+  const { data } = await axios.get(url);
 
   return data.items;
 }
 
-// 👇 1
 export const deleteById = async (url, { arg: id }) => {
-  await axios.delete(`${baseUrl}/${url}/${id}`); // 👈 2
+  await axios.delete(`${baseUrl}/${url}/${id}`);
 };
 
-// src/api/index.js
 export async function save(url, { arg: { id, ...data } }) {
   await axios({
     method: id ? 'PUT' : 'POST',

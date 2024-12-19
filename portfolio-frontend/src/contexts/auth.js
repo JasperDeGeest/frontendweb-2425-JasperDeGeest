@@ -1,4 +1,3 @@
-// src/contexts/auth.js
 import { useContext } from 'react';
 import { AuthContext } from './Auth.context';
 

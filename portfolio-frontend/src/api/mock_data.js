@@ -1,4 +1,3 @@
-// src/data/mock_data.ts
 const AANDEEL_DATA = [
   {
     id: 1,

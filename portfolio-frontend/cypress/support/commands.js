@@ -1,10 +1,9 @@
-// cypress/support/commands.js
 Cypress.Commands.add('login', (email, password) => {
   Cypress.log({
     displayName: 'login',
   });
 
-  cy.intercept('/api/sessions').as('login'); // 👈 1
+  cy.intercept('/api/sessions').as('login');
   cy.visit('http://localhost:5173/login');
 
   cy.get('[data-cy=email_input]').clear();
@@ -14,5 +13,5 @@ Cypress.Commands.add('login', (email, password) => {
   cy.get('[data-cy=password_input]').type(password);
 
   cy.get('[data-cy=submit_btn]').click();
-  cy.wait('@login'); // 👈 2
+  cy.wait('@login');
 });

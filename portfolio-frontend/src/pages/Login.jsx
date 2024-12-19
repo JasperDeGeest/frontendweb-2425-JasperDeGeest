@@ -1,10 +1,10 @@
-// src/pages/Login.jsx
-import { useCallback } from 'react'; // 👈 1
-import { useNavigate, useLocation } from 'react-router-dom'; // 👈 3
+import { useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FormProvider, useForm } from 'react-hook-form';
+import { Box, Button, Heading, VStack, Text, Link, Flex } from '@chakra-ui/react';
+import { useAuth } from '../contexts/auth';
+import Error from '../components/Error';
 import LabelInput from '../components/LabelInput';
-import { useAuth } from '../contexts/auth'; // 👈 2
-import Error from '../components/Error'; // 👈 5
 
 const validationRules = {
   email: {
@@ -16,29 +16,25 @@ const validationRules = {
 };
 
 export default function Login() {
-  const { search } = useLocation(); // 👈
-  const { error, loading, login } = useAuth(); // 👈 2, 4 en 5
+  const { search } = useLocation();
+  const { error, loading, login } = useAuth();
   const navigate = useNavigate();
 
-  // 👇 7
   const methods = useForm({
     defaultValues: {
       email: 'thomas.aelbrecht@hogent.be',
       password: '12345678',
     },
   });
-  const { handleSubmit, reset } = methods; // 👈 1 en 6
+  const { handleSubmit, reset } = methods;
 
-  // 👇 6
   const handleCancel = useCallback(() => {
     reset();
   }, [reset]);
 
-  // 👇 1
   const handleLogin = useCallback(
     async ({ email, password }) => {
-      const loggedIn = await login(email, password); // 👈 2
-      // 👇 3
+      const loggedIn = await login(email, password);
       if (loggedIn) {
         const params = new URLSearchParams(search);
         navigate({
@@ -47,63 +43,72 @@ export default function Login() {
         });
       }
     },
-    [login, navigate, search], // 👈 2 en 3
+    [login, navigate, search],
   );
 
   return (
-    <FormProvider {...methods}>
-      <div className='container'>
-        <form
-          className='d-flex flex-column'
-          onSubmit={handleSubmit(handleLogin)}
-        >
-          {/* 👆 1 */}
-          <h1>Sign in</h1>
-          <Error error={error} /> {/* 👈 5 */}
-          <LabelInput
-            label='email'
-            type='text'
-            name='email'
-            placeholder='your@email.com'
-            validationRules={validationRules.email}
-            data-cy='email_input'
-          />
-          <LabelInput
-            label='password'
-            type='password'
-            name='password'
-            validationRules={validationRules.password}
-            data-cy='password_input'
-          />
-          <div className='clearfix'>
-            <div className='btn-group float-end'>
-              <button
-                type='submit'
-                className='btn btn-primary'
-                disabled={loading}
-                data-cy='submit_btn'
-              >
-                {/* 👆 4 */}
-                Sign in
-              </button>
+    <Flex
+      direction="column"
+      justify="center"
+      align="center"
+      height="100vh"
+      bg="gray.50"
+    >
+      <Box maxW="md" mx="auto" p={6} boxShadow="lg" borderRadius="md" bg="white">
+        <Heading mb={6} fontSize="2xl" textAlign="center" data-cy="login_heading">
+          Sign in
+        </Heading>
 
-              <button
-                type='button'
-                className='btn btn-light'
-                onClick={handleCancel}
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(handleLogin)}>
+            {error && <Error error={error} />}
+
+            <LabelInput
+              mb={4}
+              label="Email"
+              name="email"
+              type="email"
+              placeholder="your@email.com"
+              validationRules={validationRules.email}
+              data-cy="email_input"
+            />
+
+            <LabelInput
+              mb={6}
+              label="Password"
+              name="password"
+              type="password"
+              placeholder="********"
+              validationRules={validationRules.password}
+              data-cy="password_input"
+            />
+
+            <VStack spacing={4} align="stretch">
+              <Button
+                type="submit"
+                colorScheme="blue"
+                isLoading={loading}
+                loadingText="Signing in"
+                isDisabled={loading}
+                data-cy="submit_btn"
               >
-                {/* 👆 6*/}
+                Sign in
+              </Button>
+
+              <Button variant="outline" onClick={handleCancel} disabled={loading}>
                 Cancel
-              </button>
-            </div>
-          </div>
-        </form>
-        <div className='text-center mt-3'>
-          <p>
-            Don&apos;t have an account? <a href='/register'>Register here</a>
-          </p>
-        </div>
-      </div>
-    </FormProvider>
+              </Button>
+            </VStack>
+          </form>
+        </FormProvider>
+
+        <Text textAlign="center" mt={4}>
+          Don&apos;t have an account?{' '}
+          <Link href="/register" color="blue.500">
+            Register here
+          </Link>
+        </Text>
+      </Box>
+    </Flex>
   );
 }

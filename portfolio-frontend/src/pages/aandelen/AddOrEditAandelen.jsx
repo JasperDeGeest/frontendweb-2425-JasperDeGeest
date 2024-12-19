@@ -1,20 +1,18 @@
-// src/pages/transactions/AddOrEditTransaction.jsx
 import useSWR from 'swr';
-import useSWRMutation from 'swr/mutation'; // 👈 1
-import { useParams } from 'react-router-dom'; // 👈 1
-import { save, getById } from '../../api'; // 👈 1
+import useSWRMutation from 'swr/mutation';
+import { useParams } from 'react-router-dom';
+import { save, getById } from '../../api';
 import AandeelForm from '../../components/aandelen/AandeelForm';
-import AsyncData from '../../components/AsyncData'; // 👈 3
+import AsyncData from '../../components/AsyncData';
 
 export default function AddOrEditTransaction() {
-  const { id } = useParams(); // 👈 2
+  const { id } = useParams();
 
   const {
     data: aandeel,
     error: aandeelError,
     isLoading: aandeelLoading,
-  } = useSWR(id ? `aandelen/${id}` : null, getById); // 👈 3
-  // 👇 2
+  } = useSWR(id ? `aandelen/${id}` : null, getById);
   const { trigger: saveAandeel, error: saveError } = useSWRMutation(
     'aandelen',
     save,

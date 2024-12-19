@@ -13,6 +13,8 @@ import type { IdParams } from '../types/common';
 import Router from '@koa/router';
 import Joi from 'joi';
 import validate from '../core/validation';
+import { requireAuthentication, makeRequireRole } from '../core/auth';
+import Role from '../core/roles';
 
 /**
  * @api {get} /aandelen Get all aandelen
@@ -86,8 +88,8 @@ createAandeel.validationScheme = {
     uitgever: Joi.string(),
     kosten: Joi.number().max(1).positive(),
     type: Joi.string(),
-    rating: Joi.number().integer().positive().max(5),
-    sustainability: Joi.number().integer().positive().max(5),
+    rating: Joi.number().integer().min(0).max(5),
+    sustainability: Joi.number().integer().min(0).max(5),
   },
 };
 
@@ -165,8 +167,8 @@ updateAandeel.validationScheme = {
     uitgever: Joi.string(),
     kosten: Joi.number().max(1).positive(),
     type: Joi.string(),
-    rating: Joi.number().integer().positive().max(5),
-    sustainability: Joi.number().integer().positive().max(5),
+    rating: Joi.number().integer().min(0).max(5),
+    sustainability: Joi.number().integer().min(0).max(5),
   },
 };
 
@@ -194,28 +196,38 @@ export default (parent: KoaRouter) => {
     prefix: '/aandelen',
   });
 
+  const requireAdmin = makeRequireRole(Role.ADMIN);
   router.get(
     '/',
+    requireAuthentication,
     validate(getAllAandelen.validationScheme),
     getAllAandelen,
   );
   router.post(
     '/', 
+    requireAuthentication,
+    requireAdmin,
     validate(createAandeel.validationScheme), 
     createAandeel,
   );
   router.get(
     '/:id', 
+    requireAuthentication,
+    requireAdmin,
     validate(getAandeelById.validationScheme), 
     getAandeelById,
   );
   router.put(
-    '/:id', 
+    '/:id',
+    requireAuthentication,
+    requireAdmin, 
     validate(updateAandeel.validationScheme),
     updateAandeel,
   );
   router.delete(
     '/:id', 
+    requireAuthentication,
+    requireAdmin,
     validate(deleteAandeel.validationScheme),
     deleteAandeel,
   );

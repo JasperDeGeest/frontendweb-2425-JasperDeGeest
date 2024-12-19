@@ -1,36 +1,33 @@
-// src/pages/Logout.jsx
-import { useEffect } from 'react'; // 👈 1
-import { useAuth } from '../contexts/auth'; // 👈 1
-
+import { Flex, Box, Heading, Text, Button } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 export default function Logout() {
-  const { isAuthed, logout } = useAuth(); // 👈 1
+  const navigate = useNavigate();
 
-  // 👇 1
-  useEffect(() => {
-    logout();
-  }, [logout]);
-
-  // 👇 2
-  if (isAuthed) {
-    return (
-      <div className='container'>
-        <div className='row'>
-          <div className='col-12'>
-            <h1>Logging out...</h1>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 👇 3
   return (
-    <div className='container'>
-      <div className='row'>
-        <div className='col-12'>
-          <h1>You were successfully logged out</h1>
-        </div>
-      </div>
-    </div>
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      minHeight="100vh"
+      bg="gray.50"
+      p={4}
+    >
+      <Box textAlign="center" p={8} boxShadow="lg" borderRadius="md" bg="white" maxW="md" width="100%">
+        <Heading size="2xl" color="teal.500">
+          You were successfully logged out!
+        </Heading>
+        <Text fontSize="lg" mt={4}>
+          We&apos;re sorry to see you go. If you want to log back in, just click the button below.
+        </Text>
+        <Button
+          colorScheme="teal"
+          size="lg"
+          mt={6}
+          onClick={() => navigate('/login')}
+        >
+          Go to Login Page
+        </Button>
+      </Box>
+    </Flex>
   );
 }

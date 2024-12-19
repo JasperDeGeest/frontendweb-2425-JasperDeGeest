@@ -1,14 +1,11 @@
-// src/components/Navbar.jsx
 import { NavLink, Link } from 'react-router-dom';
-//import { useContext } from 'react'; // 👈 1
-//import { ThemeContext } from '../contexts/Theme.context'; // 👈 1
-import { useTheme } from '../contexts/Theme'; // 👈 1
-import { IoMoonSharp, IoSunny } from 'react-icons/io5'; // 👈 4
-import { useAuth } from '../contexts/auth'; // 👈 2
+import { useTheme } from '../contexts/Theme';
+import { IoMoonSharp, IoSunny } from 'react-icons/io5';
+import { useAuth } from '../contexts/auth';
 
 export default function Navbar() {
-  const { theme, toggleTheme } = useTheme(); // 👈 2
-  const { isAuthed } = useAuth(); // 👈 1
+  const { theme, toggleTheme } = useTheme();
+  const { isAuthed } = useAuth();
 
   return (
     <nav className={`navbar fixed-top bg-${theme} text-bg-${theme} mb-4`}>
@@ -35,16 +32,13 @@ export default function Navbar() {
         </div>
         <div className='flex-grow-1'></div>
         {
-          // 👇 2
           isAuthed ? (
-            // 👇 3
             <div className='nav-item my-2 mx-sm-3 my-sm-0'>
               <Link className='nav-link' to='/logout'>
                 Logout
               </Link>
             </div>
           ) : (
-            // 👇 4
             <div className='nav-item my-2 mx-sm-3 my-sm-0'>
               <Link className='nav-link' to='/login'>
                 Login

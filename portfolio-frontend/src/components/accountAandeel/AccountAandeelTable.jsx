@@ -1,40 +1,50 @@
-// src/components/transactions/TransactionsTable.jsx
 import { useContext } from 'react';
 import { ThemeContext } from '../../contexts/Theme.context';
 import AccountAandeel from './AccountAandeel';
+import { useAuth } from '../../contexts/auth';
+import { Table, Thead, Tbody, Tr, Th, TableContainer, Box, Text } from '@chakra-ui/react';
 
 function AccountAandelenTable({ accountAandelen = [], onDelete }) {
+  const { isAdmin } = useAuth();
   const { theme } = useContext(ThemeContext);
+
   if (accountAandelen.length === 0) {
     return (
-      <div className='alert alert-info'>There are no aandelen yet.</div>
+      <Box textAlign="center" py={6} data-cy="no_account_aandelen_message">
+        <Text color="gray.500">There are no aandelen yet.</Text>
+      </Box>
     );
   }
 
   return (
-    <div>
-      <table className={`table table-hover table-responsive table-${theme}`}>
-        <thead>
-          <tr>
-            <th>afkorting</th>
-            <th>aantal</th>
-            <th>aankoopprijs</th>
-            <th>reden</th>
-            <th>geschatteDuur</th>
-            <th>Edit</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {accountAandelen.map((accountAandeel,index) => (
-            <AccountAandeel 
+    <TableContainer>
+      <Table variant="simple" colorScheme={theme}>
+        <Thead>
+          <Tr>
+            <Th>Afkorting</Th>
+            <Th>Aantal</Th>
+            <Th>Aankoopprijs</Th>
+            <Th>Reden</Th>
+            <Th>Geschatte Duur</Th>
+            {isAdmin && (
+              <>
+                <Th>Edit</Th>
+                <Th>Delete</Th>
+              </>
+            )}
+          </Tr>
+        </Thead>
+        <Tbody>
+          {accountAandelen.map((accountAandeel, index) => (
+            <AccountAandeel
               key={index}
-              onDelete = {onDelete}
-              {...accountAandeel} />
+              onDelete={onDelete}
+              {...accountAandeel}
+            />
           ))}
-        </tbody>
-      </table>
-    </div>
+        </Tbody>
+      </Table>
+    </TableContainer>
   );
 }
 

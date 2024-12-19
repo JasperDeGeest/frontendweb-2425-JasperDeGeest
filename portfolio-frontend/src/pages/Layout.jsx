@@ -1,5 +1,4 @@
-// src/pages/Layout.jsx
-import { Outlet, ScrollRestoration } from 'react-router-dom'; // 👈
+import { Outlet, ScrollRestoration } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import '../App.css';
 
@@ -8,7 +7,7 @@ export default function Layout() {
     <div className='container-xl'>
       <Navbar />
       <Outlet />
-      <ScrollRestoration /> {/* 👈 */}
+      <ScrollRestoration />
     </div>
   );
 }

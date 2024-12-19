@@ -1,7 +1,7 @@
 describe('AandeelForm Validation Tests', () => {
   beforeEach(() => {
     cy.login('thomas.aelbrecht@hogent.be', '12345678');
-    cy.visit('http://localhost:5173/aandelen/add'); // Replace with the actual route to the AandeelForm page
+    cy.visit('http://localhost:5173/aandelen/add');
   });
 
   it('should show validation errors for ISIN', () => {
@@ -121,21 +121,21 @@ describe('AandeelForm Validation Tests', () => {
     cy.get('body').click(0, 0);
     cy.get('[data-cy=submit_aandeel]').click();
 
-    cy.get('[data-cy=aandeel_isin]').eq(2).should('contain', 'LU2439733507');
-    cy.get('[data-cy=aandeel_afkorting]').eq(2).should('contain', 'AHYD');
-    cy.get('[data-cy=aandeel_uitgever]').eq(2).should('contain', 'Amundi');
-    cy.get('[data-cy=aandeel_kosten]').eq(2).should('contain', '0.16');
-    cy.get('[data-cy=aandeel_type]').eq(2).should('contain', 'Accumulatie');
-    cy.get('[data-cy=aandeel_rating]').eq(2).should('contain', '0');
-    cy.get('[data-cy=aandeel_sustainability]').eq(2).should('contain', '3');
+    cy.get('[data-cy=aandeel_isin]').eq(3).should('contain', 'LU2439733507');
+    cy.get('[data-cy=aandeel_afkorting]').eq(3).should('contain', 'AHYD');
+    cy.get('[data-cy=aandeel_uitgever]').eq(3).should('contain', 'Amundi');
+    cy.get('[data-cy=aandeel_kosten]').eq(3).should('contain', '0.16');
+    cy.get('[data-cy=aandeel_type]').eq(3).should('contain', 'Accumulatie');
+    cy.get('[data-cy=aandeel_rating]').eq(3).should('contain', '0');
+    cy.get('[data-cy=aandeel_sustainability]').eq(3).should('contain', '3');
 
-    cy.get('[data-cy=aandeel]').should('have.length', 3);
+    cy.get('[data-cy=aandeel]').should('have.length', 4);
   });
 
   it('should remove an aandeel', () => {
     cy.visit('http://localhost:5173/aandelen/');
 
-    cy.get('[data-cy=aandeel_remove_btn]').eq(2).click();
-    cy.get('[data-cy=aandeel]').should('have.length', 2);
+    cy.get('[data-cy=aandeel_remove_btn]').eq(3).click();
+    cy.get('[data-cy=aandeel]').should('have.length', 3);
   });
 });

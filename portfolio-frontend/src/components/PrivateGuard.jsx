@@ -1,12 +1,9 @@
-// src/components/PrivateRoute.jsx
-import { Navigate, Outlet } from 'react-router-dom'; // 👈 3 en 4
-import { useAuth } from '../contexts/auth'; // 👈 2
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../contexts/auth';
 
-// 👇 1
 export default function PrivateGuard() {
-  const { ready, isAdmin } = useAuth(); // 👈 2
+  const { ready, isAdmin } = useAuth();
 
-  // 👇 2
   if (!ready) {
     return (
       <div className='container'>
@@ -23,10 +20,9 @@ export default function PrivateGuard() {
     );
   }
 
-  // 👇 3
   if (isAdmin) {
     return <Outlet />;
   }
 
-  return <Navigate replace to={'/aandelen'} />; // 👈 4
+  return <Navigate replace to={'/aandelen'} />;
 }

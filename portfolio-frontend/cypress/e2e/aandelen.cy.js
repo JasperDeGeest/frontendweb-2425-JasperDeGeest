@@ -1,4 +1,3 @@
-// cypress/e2e/aandelen.cy.js
 describe('Aandelen list', () => {
   beforeEach(() => {
     cy.login('pieter.vanderhelst@hogent.be', '12345678');
@@ -24,18 +23,17 @@ describe('Aandelen list', () => {
 
   it('should show a loading indicator for a very slow response', () => {
     cy.intercept(
-      'http://localhost:9000/api/aandelen', // 👈 1
-      // 👇 2
+      'http://localhost:9000/api/aandelen',
       (req) => {
         req.on('response', (res) => {
           res.setDelay(1000);
         });
       },
-    ).as('slowResponse'); // 👈 5
-    cy.visit('http://localhost:5173'); // 👈 3
-    cy.get('[data-cy=loader]').should('be.visible'); // 👈 4
-    cy.wait('@slowResponse'); // 👈 6
-    cy.get('[data-cy=loader]').should('not.exist'); // 👈 7
+    ).as('slowResponse');
+    cy.visit('http://localhost:5173');
+    cy.get('[data-cy=loader]').should('be.visible');
+    cy.wait('@slowResponse');
+    cy.get('[data-cy=loader]').should('not.exist');
   });
 
   it('should show CSPX aandeel', () => {
@@ -43,7 +41,7 @@ describe('Aandelen list', () => {
     cy.intercept(
       'GET',
       'http://localhost:9000/api/aandelen',
-      { fixture: 'aandelen.json' }, // 👈
+      { fixture: 'aandelen.json' },
     );
     cy.get('[data-cy=aandelen_search_input]').type('CS');
     cy.get('[data-cy=aandelen_search_btn]').click();

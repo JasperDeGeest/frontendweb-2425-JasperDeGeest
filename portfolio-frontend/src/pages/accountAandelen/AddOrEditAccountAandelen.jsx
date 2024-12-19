@@ -1,19 +1,18 @@
-// src/pages/transactions/AddOrEditTransaction.jsx
 import useSWR from 'swr';
-import useSWRMutation from 'swr/mutation'; // 👈 1
-import { useParams } from 'react-router-dom'; // 👈 1
-import { save, getById, getAll} from '../../api'; // 👈 1
+import useSWRMutation from 'swr/mutation';
+import { useParams } from 'react-router-dom';
+import { save, getById, getAll} from '../../api';
 import AccountAandeelForm from '../../components/accountAandeel/AccountAandeelForm';
-import AsyncData from '../../components/AsyncData'; // 👈 3
+import AsyncData from '../../components/AsyncData';
 
 export default function EditTransaction() {
-  const { aandeelId } = useParams(); // 👈 2
+  const { aandeelId } = useParams();
 
   const {
     data: accountAandeel,
     error: accountAandeelError,
     isLoading: accountAandeelLoading,
-  } = useSWR(aandeelId ? `accounts/me/aandelen/${aandeelId}` : null, getById); // 👈 3
+  } = useSWR(aandeelId ? `accounts/me/aandelen/${aandeelId}` : null, getById);
 
   const {
     data: aandelen,
@@ -36,7 +35,6 @@ export default function EditTransaction() {
       || !accountAandelen?.some((accountAandeel) => accountAandeel.aandeel.id === aandeel.id),
     );
   };
-  // 👇 2
   const { trigger: saveAccountAandeel, error: saveError } = useSWRMutation(
     'accounts/me/aandelen',
     save,

@@ -1,35 +1,37 @@
-import { useFormContext } from 'react-hook-form'; // 👈
+import { useFormContext } from 'react-hook-form';
+import { FormControl, FormLabel, Input, FormErrorMessage } 
+  from '@chakra-ui/react';
 
 export default function LabelInput({
+  mb,
   label,
   name,
   type,
   validationRules,
+  placeholder,
   ...rest
 }) {
   const {
     register,
     formState: { errors, isSubmitting },
-  } = useFormContext(); // 👈
+  } = useFormContext();
 
   const hasError = name in errors;
 
   return (
-    <div className='mb-3'>
-      <label htmlFor={name} className='form-label'>
-        {label}
-      </label>
-      <input
-        {...register(name, validationRules)}
+    <FormControl isInvalid={hasError} mb={mb}>
+      <FormLabel htmlFor={name}>{label}</FormLabel>
+      <Input
         id={name}
         type={type}
+        placeholder={placeholder}
         disabled={isSubmitting}
-        className='form-control'
         {...rest}
+        {...register(name, validationRules)}
       />
       {hasError ? (
-        <div className='form-text text-danger' data-cy='label-input-error'>{errors[name].message}</div>
+        <FormErrorMessage data-cy='label-input-error'>{errors[name].message}</FormErrorMessage>
       ) : null}
-    </div>
+    </FormControl>
   );
 }
