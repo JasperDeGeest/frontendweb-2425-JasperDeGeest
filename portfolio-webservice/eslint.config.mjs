@@ -3,12 +3,10 @@ import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
 import jest from 'eslint-plugin-jest';
 
-// 👇 1
 export default tseslint.config(
-  eslint.configs.recommended, // 👈 2
-  ...tseslint.configs.recommended, // 👈 2
+  eslint.configs.recommended, 
+  ...tseslint.configs.recommended, 
   {
-    // 👇 3
     files: ['**/*.ts', '**/*.spec.ts'],
     plugins: {
       '@stylistic': stylistic,

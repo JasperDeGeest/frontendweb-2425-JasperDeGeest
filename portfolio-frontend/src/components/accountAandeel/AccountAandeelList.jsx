@@ -5,7 +5,6 @@ import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 import { getAll, deleteById } from '../../api';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/auth';
 import {
   Box,
   Button,
@@ -23,7 +22,6 @@ import { SearchIcon } from '@chakra-ui/icons';
 export default function AandeelList() {
   const [text, setText] = useState('');
   const [search, setSearch] = useState('');
-  const { isAdmin } = useAuth();
 
   const {
     data: accountAandelen = [],
@@ -90,11 +88,9 @@ export default function AandeelList() {
           Search
         </Button>
 
-        {isAdmin && (
-          <Link to="/accounts/me/aandelen/add">
-            <Button colorScheme="green">+</Button>
-          </Link>
-        )}
+        <Link to="/accounts/me/aandelen/add">
+          <Button colorScheme="green">+</Button>
+        </Link>
       </Stack>
 
       <Box mt={4} width="100%" maxWidth="1200px">

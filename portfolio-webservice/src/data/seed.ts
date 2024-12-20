@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../core/password';
-import Role from '../core/roles'; // 👈
+import Role from '../core/roles';
 
 const prisma = new PrismaClient();
 
@@ -87,7 +87,7 @@ async function main() {
         email: 'thomas.aelbrecht@hogent.be',
         hashedPassword: passwordHash,
         onbelegdVermogen: 250,
-        rijksregisterNummer: 12345678911,
+        rijksregisterNummer: '12345678911',
         voornaam: 'Thomas',
         achternaam: 'Aelbrecht',
         adresId: 1,
@@ -98,7 +98,7 @@ async function main() {
         email: 'pieter.vanderhelst@hogent.be',
         hashedPassword: passwordHash,
         onbelegdVermogen: 300,
-        rijksregisterNummer: 95514614110,
+        rijksregisterNummer: '95514614110',
         voornaam: 'Pieter',
         achternaam: 'Van Der Helst',
         adresId: 2,
@@ -109,7 +109,7 @@ async function main() {
         email: 'karine.samyn@hogent.be',
         hashedPassword: passwordHash,
         onbelegdVermogen: 8960,
-        rijksregisterNummer: 74844646110,
+        rijksregisterNummer: '74844646110',
         voornaam: 'Karine',
         achternaam: 'Samyn',
         adresId: 3,

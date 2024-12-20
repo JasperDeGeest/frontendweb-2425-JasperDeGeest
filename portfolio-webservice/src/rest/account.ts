@@ -22,16 +22,16 @@ import type {
 } from '../types/accountAandeel';
 import Joi from 'joi';
 import validate from '../core/validation';
-import { requireAuthentication, makeRequireRole, authDelay } from '../core/auth'; // 👈 2
-import Role from '../core/roles'; // 👈 4
+import { requireAuthentication, makeRequireRole, authDelay } from '../core/auth';
+import Role from '../core/roles';
 import type { Next } from 'koa';
 import type { IdParams } from '../types/common';
 
 const checkAccountId = (ctx: KoaContext<unknown, GetAccountRequest>, next: Next) => {
   const { accountId, roles } = ctx.state.session;
   const { id } = ctx.params;
-  // You can only get our own data unless you're an admin
-  if (id !== 'me' && id !== accountId && !roles.includes(Role.ADMIN)) {
+
+  if (String(id) !== 'me' && String(id) !== String(accountId) && !roles.includes(Role.ADMIN)) {
     return ctx.throw(
       403,
       'You are not allowed to view this user\'s information',
@@ -90,15 +90,15 @@ const registerAccount = async (
   ctx: KoaContext<LoginResponse, void, RegisterAccountRequest>,
 ) => {
   const token = await accountService.register(ctx.request.body);
-  ctx.status = 200;
+  ctx.status = 201;
   ctx.body = { token };
 };
 registerAccount.validationScheme = {
   body: {
     email: Joi.string().email(),
-    Password: Joi.string().min(12).max(128),
+    Password: Joi.string().min(8).max(128),
     onbelegdVermogen: Joi.number().min(0),
-    rijksregisterNummer: Joi.number().min(10000000000).max(99999999999),
+    rijksregisterNummer: Joi.string().min(11).max(11),
     voornaam: Joi.string().max(255),
     achternaam: Joi.string().max(255),
     adres: Joi.object({
@@ -128,7 +128,7 @@ registerAccount.validationScheme = {
  * @apiError (Error 500) {Object} INTERNAL_SERVER_ERROR Internal server error.
  */
 const getAccountById = async (
-  ctx: KoaContext<GetAccountByIdResponse, GetAccountRequest>, // 👈
+  ctx: KoaContext<GetAccountByIdResponse, GetAccountRequest>,
 ) => {
   const account = await accountService.getById(
     ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id,
@@ -184,7 +184,7 @@ updateAccount.validationScheme = {
   },
   body: {
     email: Joi.string().email(),
-    rijksregisterNummer: Joi.number().min(10000000000).max(99999999999),
+    rijksregisterNummer: Joi.string().min(11).max(11),
     voornaam: Joi.string().max(255),
     achternaam: Joi.string().max(255),
     adres: Joi.object({
@@ -265,7 +265,7 @@ const updateAccountAandeel = async (ctx: KoaContext<UpdateAccountAandeelResponse
     ctx.params.id === 'me' ? ctx.state.session.accountId : ctx.params.id, 
     ctx.params.aandeelId,
     ctx.request.body);
-  ctx.status = 200;
+  ctx.status = 201;
   ctx.body = accountAandeel;
 };
 updateAccountAandeel.validationScheme = {

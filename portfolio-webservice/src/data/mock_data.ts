@@ -1,4 +1,3 @@
-// src/data/mock_data.ts
 export const AANDELEN = [
   {
     id: 1,

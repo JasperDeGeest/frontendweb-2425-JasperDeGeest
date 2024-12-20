@@ -2,13 +2,13 @@ import { prisma } from '../data';
 import type { Account, AccountUpdateInput, PublicAccount, RegisterAccountRequest } from '../types/account';
 import type { AccountAandeel, AccountAandeelCreateInput, AccountAandeelUpdateInput } from '../types/accountAandeel';
 import { hashPassword, verifyPassword } from '../core/password';
-import Role from '../core/roles'; // Add this line to import Role
+import Role from '../core/roles';
 import ServiceError from '../core/serviceError';
 import handleDBError  from './_handleDBError';
-import jwt from 'jsonwebtoken'; // 👈 9
-import { getLogger } from '../core/logging'; // 👈 4
-import { generateJWT, verifyJWT } from '../core/jwt'; // 👈 5
-import type { SessionInfo } from '../types/auth'; // 👈 1
+import jwt from 'jsonwebtoken';
+import { getLogger } from '../core/logging';
+import { generateJWT, verifyJWT } from '../core/jwt';
+import type { SessionInfo } from '../types/auth';
 
 export const login = async (
   email: string,
@@ -28,60 +28,47 @@ export const login = async (
           },
         },
       },
-    }); // 👈 2
+    });
 
-  // 👇 3
   if (!account) {
-    // DO NOT expose we don't know the account
     throw ServiceError.unauthorized(
       'The given email and password do not match',
     );
   }
 
-  // 👇 4
   const passwordValid = await verifyPassword(password, account.hashedPassword);
 
-  // 👇 5
   if (!passwordValid) {
-    // DO NOT expose we know the account but an invalid password was given
     throw ServiceError.unauthorized(
       'The given email and password do not match',
     );
   }
 
-  return await generateJWT(account); // 👈 6
+  return await generateJWT(account);
 };
 
 export const checkAndParseSession = async (
   authHeader?: string,
 ): Promise<SessionInfo> => {
-  // 👇 2
   if (!authHeader) {
     throw ServiceError.unauthorized('You need to be signed in');
   }
 
-  // 👇 3
   if (!authHeader.startsWith('Bearer ')) {
     throw ServiceError.unauthorized('Invalid authentication token');
   }
 
-  // 👇 4
   const authToken = authHeader.substring(7);
 
-  // 👇 5
   try {
-    const { roles, sub } = await verifyJWT(authToken); // 👈 6
-
-    // 👇 7
+    const { roles, sub } = await verifyJWT(authToken);
     return {
       accountId: Number(sub),
       roles,
     };
   } catch (error: any) {
-    // 👇 8
     getLogger().error(error.message, { error });
 
-    // 👇 9
     if (error instanceof jwt.TokenExpiredError) {
       throw ServiceError.unauthorized('The token has expired');
     } else if (error instanceof jwt.JsonWebTokenError) {
@@ -95,9 +82,8 @@ export const checkAndParseSession = async (
 };
 
 export const checkRole = (role: string, roles: string[]): void => {
-  const hasPermission = roles.includes(role); // 👈 1
+  const hasPermission = roles.includes(role);
 
-  // 👇 2
   if (!hasPermission) {
     throw ServiceError.forbidden(
       'You are not allowed to view this part of the application',
@@ -151,12 +137,15 @@ export const getById = async (id: number): Promise<Account> => {
     throw ServiceError.notFound('No account with this id exists');
   }
 
-  return account;
+  return {
+    ...account,
+    rijksregisterNummer: account.rijksregisterNummer.toString(),
+  };
 };
 
 export const register = async ({
   email,
-  password,
+  Password,
   onbelegdVermogen,
   rijksregisterNummer,
   voornaam,
@@ -164,7 +153,8 @@ export const register = async ({
   adres,
 }: RegisterAccountRequest): Promise<string> => {
   try {
-    const passwordHash = await hashPassword(password);
+    console.log(Password);
+    const passwordHash = await hashPassword(Password);
     const newAdres = await prisma.adres.create({
       data : adres,
     });

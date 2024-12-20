@@ -6,7 +6,7 @@ export interface Account extends Entity {
   email: string;
   hashedPassword: string;
   onbelegdVermogen: number;
-  rijksregisterNummer: number;
+  rijksregisterNummer: string;
   voornaam: string;
   achternaam: string;
   adres: Adres;
@@ -17,7 +17,7 @@ export interface AccountCreateInput {
   email: string;
   password: string;
   onbelegdVermogen: number;
-  rijksregisterNummer: number;
+  rijksregisterNummer: string;
   voornaam: string;
   achternaam: string;
   adres: Adres;
@@ -39,9 +39,9 @@ export interface GetAccountRequest {
 
 export interface RegisterAccountRequest {
   email: string;
-  password: string;
+  Password: string;
   onbelegdVermogen: number;
-  rijksregisterNummer: number;
+  rijksregisterNummer: string;
   voornaam: string;
   achternaam: string;
   adres: Adres;

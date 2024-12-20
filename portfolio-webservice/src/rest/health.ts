@@ -1,4 +1,3 @@
-// src/rest/health.ts
 import Router from '@koa/router';
 import * as healthService from '../service/health';
 import type { Context } from 'koa';

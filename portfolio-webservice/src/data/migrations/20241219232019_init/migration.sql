@@ -15,7 +15,7 @@ CREATE TABLE `Account` (
     `email` VARCHAR(255) NOT NULL,
     `hashedPassword` VARCHAR(255) NOT NULL,
     `onbelegdVermogen` FLOAT NOT NULL,
-    `rijksregisterNummer` FLOAT NOT NULL,
+    `rijksregisterNummer` VARCHAR(11) NOT NULL,
     `voornaam` VARCHAR(100) NOT NULL,
     `achternaam` VARCHAR(100) NOT NULL,
     `adresId` INTEGER UNSIGNED NOT NULL,

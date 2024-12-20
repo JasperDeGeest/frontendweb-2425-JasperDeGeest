@@ -21,13 +21,13 @@ export default function Register() {
 
   const handleRegister = useCallback(
     async ({
-      email, password, onbelegdVermogen, rijksregisterNummer, voornaam, achternaam, straat, huisNummer, stad, land,
+      email, Password, onbelegdVermogen, rijksregisterNummer, voornaam, achternaam, straat, huisNummer, stad, land,
     }) => {
       const loggedIn = await register({
         email,
-        password,
+        Password,
         onbelegdVermogen: Number(onbelegdVermogen),
-        rijksregisterNummer: Number(rijksregisterNummer),
+        rijksregisterNummer: rijksregisterNummer,
         voornaam,
         achternaam,
         adres: { straat, huisNummer, stad, land },
@@ -46,12 +46,12 @@ export default function Register() {
   const validationRules = useMemo(
     () => ({
       email: { required: 'Email is required' },
-      password: { required: 'Password is required' },
+      Password: { required: 'Password is required' },
       confirmPassword: {
         required: 'Password confirmation is required',
         validate: (value) => {
-          const password = getValues('password');
-          return password === value || 'Passwords do not match';
+          const Password = getValues('Password');
+          return Password === value || 'Passwords do not match';
         },
       },
       onbelegdVermogen: { required: 'Onbelegd Vermogen is required' },
@@ -93,16 +93,16 @@ export default function Register() {
               mb={4}
             />
             <LabelInput
-              name="password"
-              type="password"
+              name="Password"
+              type="Password"
               label="Password"
               placeholder="********"
-              validationRules={validationRules.password}
+              validationRules={validationRules.Password}
               mb={4}
             />
             <LabelInput
               name="confirmPassword"
-              type="password"
+              type="Password"
               label="Confirm Password"
               placeholder="********"
               validationRules={validationRules.confirmPassword}
@@ -115,7 +115,7 @@ export default function Register() {
               validationRules={validationRules.onbelegdVermogen}
               mb={4}
             />
-            <NumberInput
+            <LabelInput
               name="rijksregisterNummer"
               label="Rijksregister Nummer"
               placeholder="Rijksregister Nummer"

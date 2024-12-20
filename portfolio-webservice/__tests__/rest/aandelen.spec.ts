@@ -1,7 +1,8 @@
-import supertest from 'supertest';
-import createServer from '../../src/createServer';
-import type { Server } from '../../src/createServer';
+import type supertest from 'supertest';
 import { prisma } from '../../src/data';
+import withServer from '../helpers/withServer';
+import { loginAdmin } from '../helpers/login';
+import testAuthHeader from '../helpers/testAuthHeader';
 
 const data = {
   aandelen: [
@@ -43,18 +44,17 @@ const dataToDelete = {
 };
 
 describe('Aandelen', () => {
-  let server: Server;
   let request: supertest.Agent;
-  let initialCount: number;
+  let authHeader: string;
+  let initialCount = 0;
 
-  beforeAll(async () => {
-    server = await createServer();
-    request = supertest(server.getApp().callback());
-    initialCount = await prisma.aandeel.count();
+  withServer((r) => {
+    request = r;
   });
 
-  afterAll(async () => {
-    await server.stop();
+  beforeAll(async () => {
+    authHeader = await loginAdmin(request);
+    initialCount = await prisma.aandeel.count();
   });
 
   const url = '/api/aandelen';
@@ -72,7 +72,7 @@ describe('Aandelen', () => {
     });
     
     it('should 200 and return all transactions', async () => {
-      const response = await request.get(url);
+      const response = await request.get(url).set('Authorization', authHeader);
       expect(response.status).toBe(200);
       expect(response.body.items.length).toBe(initialCount + data.aandelen.length);
       expect(response.body.items).toEqual(
@@ -110,6 +110,7 @@ describe('Aandelen', () => {
         ]),
       );
     });
+    testAuthHeader(() => request.get(url));
   });
 
   describe('POST /api/aandelen', () => {
@@ -122,7 +123,7 @@ describe('Aandelen', () => {
     });
 
     it('should 201 and return the created aandeel', async () => {
-      const response = await request.post(url).send({
+      const response = await request.post(url).set('Authorization', authHeader).send({
         'isin': 'IE00B5BMR105',
         'afkorting': 'AMFE',
         'uitgever': 'iShares',
@@ -158,7 +159,7 @@ describe('Aandelen', () => {
     });
 
     it('should 200 and return the updated aandeel', async () => {
-      const response = await request.put(`${url}/4`)
+      const response = await request.put(`${url}/4`).set('Authorization', authHeader)
         .send({
           'isin': 'IE00B5BMR090',
           'afkorting': 'AMFE',
@@ -193,7 +194,7 @@ describe('Aandelen', () => {
     });
 
     it('should 204 and return nothing', async () => {
-      const response = await request.delete(`${url}/4`);
+      const response = await request.delete(`${url}/4`).set('Authorization', authHeader);
       expect(response.statusCode).toBe(204);
       expect(response.body).toEqual({});
     });
@@ -211,7 +212,7 @@ describe('Aandelen', () => {
     });
 
     it('should 200 and return aandeel with id', async () => {
-      const response = await request.get(`${url}/4`);
+      const response = await request.get(`${url}/4`).set('Authorization', authHeader);
       expect(response.status).toBe(200);
       expect(response.body.id).toBe(4);
       expect(response.body.isin).toBe('IE00BD8PGZ49');

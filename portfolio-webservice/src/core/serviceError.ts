@@ -1,6 +1,3 @@
-// src/core/serviceError.ts
-
-// 👇 2
 const NOT_FOUND = 'NOT_FOUND';
 const VALIDATION_FAILED = 'VALIDATION_FAILED';
 const UNAUTHORIZED = 'UNAUTHORIZED';
@@ -8,19 +5,15 @@ const FORBIDDEN = 'FORBIDDEN';
 const INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR';
 const CONFLICT = 'CONFLICT';
 
-// 👇 1
 export default class ServiceError extends Error {
-  // 👇 3
   code: string;
 
-  // 👇 3
   constructor(code: string, message: string) {
     super(message);
     this.code = code;
     this.name = 'ServiceError';
   }
 
-  // 👇 4
   static notFound(message: string) {
     return new ServiceError(NOT_FOUND, message);
   }
@@ -45,7 +38,6 @@ export default class ServiceError extends Error {
     return new ServiceError(CONFLICT, message);
   }
 
-  // 👇 5
   get isNotFound(): boolean {
     return this.code === NOT_FOUND;
   }

@@ -1,70 +1,13 @@
-import supertest from 'supertest';
-import createServer from '../../src/createServer';
-import type { Server } from '../../src/createServer';
+import type supertest from 'supertest';
 import { prisma } from '../../src/data';
+import withServer from '../helpers/withServer';
+import { loginAdmin } from '../helpers/login';
+import testAuthHeader from '../helpers/testAuthHeader';
 
 const data = {
-  accounts: [
-    {
-      'id': 4,
-      'email': 'test@test4.com',
-      'hashedPassword': 'dfgrqfg',
-      'onbelegdVermogen': 500,
-      'rijksregisterNummer': 987654321,
-      'voornaam': 'Tibe',
-      'achternaam': 'De Lange',
-      'adresId': 4,
-      'roles': '[]',
-    },
-    {
-      'id': 5,
-      'email': 'test@test5.com',
-      'hashedPassword': 'fjqlsdfm',
-      'onbelegdVermogen': 156461,
-      'rijksregisterNummer': 144454621,
-      'voornaam': 'Test5',
-      'adresId': 5,
-      'roles': '[]',
-      'achternaam': 'Test5',
-    },
-    {
-      'id': 6,
-      'email': 'test@test6.com',
-      'hashedPassword': 'fqsdfdqs',
-      'onbelegdVermogen': 45894,
-      'rijksregisterNummer': 123456789,
-      'voornaam': 'Test6',
-      'achternaam': 'Test6',
-      'adresId': 6,
-      'roles': '[]',
-    },
-  ],
-  adresses: [
-    {
-      'id': 4,
-      'straat': 'ColaStraat',
-      'huisNummer': '59',
-      'stad': 'Roense',
-      'land': 'België',
-    },
-    {
-      'id': 5,
-      'straat': 'Teststraat5',
-      'huisNummer': '5',
-      'stad': 'Test5',
-      'land': 'België',
-    },
-    {
-      'id': 6,
-      'straat': 'Teststraat6',
-      'huisNummer': '6',
-      'stad': 'Test6',
-      'land': 'België',
-    },
-  ],
   accountAandelen: [
     {
-      'accountId': 4,
+      'accountId': 1,
       'aandeelId': 2,
       'aantal': 10,
       'aankoopPrijs': 5,
@@ -72,7 +15,7 @@ const data = {
       'geschatteDuur': '5 jaar',
     },
     {
-      'accountId': 4,
+      'accountId': 1,
       'aandeelId': 3,
       'aantal': 5,
       'aankoopPrijs': 20,
@@ -80,7 +23,7 @@ const data = {
       'geschatteDuur': '5 jaar',
     },
     {
-      'accountId': 5,
+      'accountId': 2,
       'aandeelId': 1,
       'aantal': 5,
       'aankoopPrijs': 20,
@@ -88,227 +31,425 @@ const data = {
       'geschatteDuur': '5 jaar',
     },
   ],
-};
-
-const dataToDelete = {
-  accounts: [4,5,6],
-  adresses: [4,5,6],
-  accountAandelen: [4,5],
+  aandelen: [
+    {
+      id: 1,
+      isin: 'IE00B5BMR087',
+      afkorting: 'CSPX',
+      uitgever: 'iShares',
+      kosten: 0.07,
+      type: 'Accumulatie',
+      rating: 5,
+      sustainability: 3,
+    },
+    {
+      id: 2,
+      isin: 'IE00B4L5Y983',
+      afkorting: 'IWDA',
+      uitgever: 'iShares',
+      kosten: 0.20,
+      type: 'Accumulatie',
+      rating: 5,
+      sustainability: 2,
+    },
+    {
+      id: 3,
+      isin: 'IE00B810Q511',
+      afkorting: 'FSTE',
+      uitgever: 'Vanguard',
+      kosten: 0.09,
+      type: 'Verspreiden',
+      rating: 4,
+      sustainability: 2,
+    },
+  ],
 };
 
 describe('Accounts', () => {
-  let server: Server;
   let request: supertest.Agent;
+  let authHeader: string;
+
+  withServer((r) => (request = r));
 
   beforeAll(async () => {
-    server = await createServer();
-    request = supertest(server.getApp().callback());
-  });
-
-  afterAll(async () => {
-    await server.stop();
+    authHeader = await loginAdmin(request);
   });
 
   const url = '/api/accounts';
 
+  describe('GET /api/accounts', () => {
+    it('should 200 and return all accounts', async () => {
+      const response = await request.get(url).set('Authorization', authHeader);
+  
+      // Expect the response status to be 200 (OK)
+      expect(response.status).toBe(200);
+  
+      // Ensure that the response body contains 'items' as an array
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          items: expect.arrayContaining([ // Expect 'items' to be an array
+            expect.objectContaining({
+              id: 1,
+              voornaam: 'Test',
+              achternaam: 'User',
+              email: 'test.user@hogent.be',
+            }),
+            expect.objectContaining({
+              id: 2,
+              voornaam: 'Admin',
+              achternaam: 'User',
+              email: 'admin.user@hogent.be',
+            }),
+          ]),
+        }),
+      );
+    });
+  });
+
   describe('GET /api/accounts/:id', () => {
-    beforeAll(async () => {
-      await prisma.adres.createMany({data: data.adresses});
-      await prisma.account.createMany({data: data.accounts});
-    });
-
-    afterAll(async () => {
-      await prisma.account.deleteMany({
-        where: {id: { in: dataToDelete.accounts}},
-      });
-      await prisma.adres.deleteMany({
-        where: {id: { in: dataToDelete.adresses}},
-      });
-    });
-
-    it('should 200 and return aandeel with id', async () => {
-      const response = await request.get(`${url}/4`);
+    it('should 200 and return account with id', async () => {
+      const response = await request.get(`${url}/1`).set('Authorization', authHeader);
       console.log(response.body);
       expect(response.status).toBe(200);
       expect(response.body).toEqual(
         expect.objectContaining({
-          id: 4,
-          email: 'test@test4.com',
-          hashedPassword: 'dfgrqfg',
-          onbelegdVermogen: 500,
-          rijksregisterNummer: 987654321,
-          voornaam: 'Tibe',
-          achternaam: 'De Lange',
-          adresId: 4,
+          id: 1,
+          voornaam: 'Test',
+          achternaam: 'User',
+          email: 'test.user@hogent.be',
+          onbelegdVermogen: 250,
+          rijksregisterNummer: '12345678911',
+          roles: '["user"]',
+          adresId: 1,
           adres: expect.objectContaining({
-            id: 4,
-            straat: 'ColaStraat',
-            huisNummer: '59',
-            stad: 'Roense',
-            land: 'België',
+            id: 1,
+            straat: 'Straat1',
+            huisNummer: '1',
+            stad: 'Stad1',
+            land: 'Land1',
           }),
         }),
       );
     });
-  });
 
-  describe('POST /api/accounts', () => {
-    const accountToDelete: number[] = [];
-    const adresToDelete: number[] = [];
-  
-    afterAll(async () => {
-      await prisma.account.deleteMany({
-        where: { id: { in: accountToDelete } },
-      });
-
-      await prisma.adres.deleteMany({
-        where: { id: { in: adresToDelete } },
-      });
-    });
-
-    it('should 201 and return the created account', async () => {
-      const response = await request.post(url).send({
-        'id': 4,
-        'email': 'test@test4.com',
-        'hashedPassword': 'gqsfgq',
-        'onbelegdVermogen': 1561,
-        'rijksregisterNummer': 4515414,
-        'voornaam': 'Test4',
-        'achternaam': 'Test4',
-        'adresId': 4,
-        'adres': {
-          'id': 4,
-          'straat': 'Test4straat',
-          'huisNummer': '4',
-          'stad': 'Test4',
-          'land': 'België',
-        },
-      });
-    
-      expect(response.status).toBe(201);
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          id: 4,
-          email: 'test@test4.com',
-          hashedPassword: 'gqsfgq',
-          onbelegdVermogen: 1561,
-          rijksregisterNummer: 4515414,
-          voornaam: 'Test4',
-          achternaam: 'Test4',
-          adresId: 4,
-          adres: expect.objectContaining({
-            id: 4,
-            straat: 'Test4straat',
-            huisNummer: '4',
-            stad: 'Test4',
-            land: 'België',
-          }),
-        }),
-      );
-      accountToDelete.push(response.body.id);
-      adresToDelete.push(response.body.adres.id);
-    });
-  });
-
-  describe('PUT /api/aandelen/:id', () => {
-    beforeAll(async () => {
-      await prisma.adres.createMany({data: data.adresses});
-      await prisma.account.createMany({data: data.accounts});
-    });
-
-    afterAll(async () => {
-      await prisma.account.deleteMany({
-        where: {id: { in: dataToDelete.accounts}},
-      });
-      await prisma.adres.deleteMany({
-        where: {id: { in: dataToDelete.adresses}},
-      });
-    });
-
-    it('should 201 and return the created account', async () => {
-      const response = await request.put(`${url}/4`).send({
-        'id': 4,
-        'email': 'test@test4.com',
-        'hashedPassword': 'gqsfgq',
-        'onbelegdVermogen': 1561,
-        'rijksregisterNummer': 4515414,
-        'voornaam': 'Test4',
-        'achternaam': 'Test4',
-        'adresId': 4,
-        'adres': {
-          'id': 4,
-          'straat': 'Test4straat',
-          'huisNummer': '4',
-          'stad': 'Test4',
-          'land': 'België',
-        },
-      });
-    
+    it('should 200 and return account with id', async () => {
+      const response = await request.get(`${url}/me`).set('Authorization', authHeader);
+      console.log(response.body);
       expect(response.status).toBe(200);
       expect(response.body).toEqual(
         expect.objectContaining({
-          id: 4,
-          email: 'test@test4.com',
-          hashedPassword: 'gqsfgq',
-          onbelegdVermogen: 1561,
-          rijksregisterNummer: 4515414,
-          voornaam: 'Test4',
-          achternaam: 'Test4',
-          adresId: 4,
+          id: 2,
+          voornaam: 'Admin',
+          achternaam: 'User',
+          email: 'admin.user@hogent.be',
+          onbelegdVermogen: 250,
+          hashedPassword: expect.any(String),
+          rijksregisterNummer: '12345678912',
+          roles: '["admin","user"]',
+          adresId: 2,
           adres: expect.objectContaining({
-            id: 4,
-            straat: 'Test4straat',
-            huisNummer: '4',
-            stad: 'Test4',
-            land: 'België',
+            id: 2,
+            straat: 'Straat2',
+            huisNummer: '2',
+            stad: 'Stad2',
+            land: 'Land2',
           }),
+        }),
+      );
+    });
+    testAuthHeader(() => request.get(url));
+  });
+
+  describe('POST /api/accounts', () => {
+    it('should 201 and return the created account', async () => {
+      const response = await request.post(url).send({
+        email: 'test@test4.com',
+        Password: 'wachtwoord123',
+        onbelegdVermogen: 250,
+        rijksregisterNummer: '12345678991',
+        voornaam: 'test4',
+        achternaam: 'test4',
+        adres: { straat: 'ffff', huisNummer: '548', stad: 'Test', land: 'f' },
+      });
+  
+      // Verify status code and response structure
+      expect(response.status).toBe(201);
+  
+      // Expect the response body to match the expected object
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          token: expect.any(String), // Allow any string for the token field
         }),
       );
     });
   });
 
   describe('GET /api/accounts/:id/aandelen', () => {
-    
+
     beforeAll(async () => {
-      await prisma.adres.createMany({data: data.adresses});
-      await prisma.account.createMany({ data: data.accounts }); 
+      await prisma.aandeel.createMany({data: data.aandelen});
       await prisma.accountAandeel.createMany({data: data.accountAandelen}); 
     });
 
     afterAll(async () => {
-      await prisma.accountAandeel.deleteMany({
-        where: { accountId: { in: dataToDelete.accountAandelen } },
-      });
-      await prisma.account.deleteMany({
-        where: { id: { in: dataToDelete.accounts } },
-      });
-      await prisma.adres.deleteMany({
-        where: { id: { in: dataToDelete.adresses } },
-      });
+      await prisma.accountAandeel.deleteMany();
+      await prisma.aandeel.deleteMany();
     });
     
     it('should 200 and return all accountAandelen', async () => {
-      const response = await request.get(`${url}/4/aandelen`);
+      const response = await request.get(`${url}/2/aandelen`).set('Authorization', authHeader);
       expect(response.status).toBe(200);
       expect(response.body.items).toEqual(
         expect.arrayContaining([
           {
-            'accountId': 4,
-            'aandeelId': 2,
-            'aantal': 10,
-            'aankoopPrijs': 5,
+            'aandeel': {
+              'afkorting': 'CSPX', 
+              'id': 1, 
+              'isin': 'IE00B5BMR087', 
+              'kosten': 0.07, 
+              'rating': 5, 
+              'sustainability': 3, 
+              'type': 
+              'Accumulatie', 
+              'uitgever': 'iShares',
+            }, 
+            'aandeelId': 1, 
+            'aankoopPrijs': 20, 
+            'aantal': 5, 
+            'accountId': 2, 
+            'geschatteDuur': '5 jaar', 
             'reden': 'ik denk dat dit goed is.',
-            'geschatteDuur': '5 jaar',
-          },
-          {
-            'accountId': 4,
-            'aandeelId': 3,
-            'aantal': 5,
-            'aankoopPrijs': 20,
-            'reden': 'ik denk dat dit goed is.',
-            'geschatteDuur': '5 jaar',
-          },
+          }, 
         ]),
+      );
+    });
+
+    it('should 200 and return all accountAandelen', async () => {
+      const response = await request.get(`${url}/me/aandelen`).set('Authorization', authHeader);
+      expect(response.status).toBe(200);
+      expect(response.body.items).toEqual(
+        expect.arrayContaining([
+          {
+            'aandeel': {
+              'afkorting': 'CSPX', 
+              'id': 1, 
+              'isin': 'IE00B5BMR087', 
+              'kosten': 0.07, 
+              'rating': 5, 
+              'sustainability': 3, 
+              'type': 
+              'Accumulatie', 
+              'uitgever': 'iShares',
+            }, 
+            'aandeelId': 1, 
+            'aankoopPrijs': 20, 
+            'aantal': 5, 
+            'accountId': 2, 
+            'geschatteDuur': '5 jaar', 
+            'reden': 'ik denk dat dit goed is.',
+          }, 
+        ]),
+      );
+    });
+  });
+
+  describe('PUT /api/accounts/:accountId/aandelen/:aandeelId', () => {
+    beforeAll(async () => {
+      await prisma.aandeel.createMany({data: data.aandelen});
+      await prisma.accountAandeel.createMany({data: data.accountAandelen}); 
+    });
+
+    afterAll(async () => {
+      await prisma.accountAandeel.deleteMany();
+      await prisma.aandeel.deleteMany();
+    });
+
+    it('should 201 and return the edited accountAandeel', async () => {
+      const response = await request.put(`${url}/2/aandelen/1`).set('Authorization', authHeader).send({
+        aantal: 10,
+        aankoopPrijs: 5,
+        reden: 'ik denk dat dit goed is.',
+        geschatteDuur: '5 jaar',
+      });
+    
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          aandeel: expect.objectContaining({
+            afkorting: 'CSPX',
+            id: 1,
+            isin: 'IE00B5BMR087',
+            kosten: 0.07,
+            rating: 5,
+            sustainability: 3,
+            type: 'Accumulatie',
+            uitgever: 'iShares',
+          }),
+          accountId: 2,
+          aandeelId: 1,
+          aantal: 10,
+          aankoopPrijs: 5,
+          reden: 'ik denk dat dit goed is.',
+          geschatteDuur: '5 jaar',
+        }),
+      );
+    });
+
+    it('should 201 and return the edited accountAandeel', async () => {
+      const response = await request.put(`${url}/me/aandelen/1`).set('Authorization', authHeader).send({
+        aantal: 15,
+        aankoopPrijs: 15,
+        reden: 'ik denk dat dit goed is.',
+        geschatteDuur: '5 jaar',
+      });
+    
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          aandeel: expect.objectContaining({
+            afkorting: 'CSPX',
+            id: 1,
+            isin: 'IE00B5BMR087',
+            kosten: 0.07,
+            rating: 5,
+            sustainability: 3,
+            type: 'Accumulatie',
+            uitgever: 'iShares',
+          }),
+          accountId: 2,
+          aandeelId: 1,
+          aantal: 15,
+          aankoopPrijs: 15,
+          reden: 'ik denk dat dit goed is.',
+          geschatteDuur: '5 jaar',
+        }),
+      );
+    });
+  });
+
+  describe('DELETE /api/accounts/:accountId/aandelen/:aandeelId', () => {
+    beforeAll(async () => {
+      await prisma.aandeel.createMany({data: data.aandelen});
+      await prisma.accountAandeel.createMany({data: data.accountAandelen}); 
+    });
+
+    afterAll(async () => {
+      await prisma.accountAandeel.deleteMany();
+      await prisma.aandeel.deleteMany();
+    });
+
+    it('should 204 and delete the accountAandeel', async () => {
+      const response = await request.delete(`${url}/1/aandelen/2`).set('Authorization', authHeader);
+      expect(response.status).toBe(204);
+    });
+
+    it('should 204 and delete the accountAandeel', async () => {
+      const response = await request.delete(`${url}/me/aandelen/1`).set('Authorization', authHeader);
+      expect(response.status).toBe(204);
+    });
+  });
+
+  describe('GET /api/accounts/:accountId/aandelen/:aandeelId', () => {
+    beforeAll(async () => {
+      await prisma.aandeel.createMany({data: data.aandelen});
+      await prisma.accountAandeel.createMany({data: data.accountAandelen}); 
+    });
+
+    afterAll(async () => {
+      await prisma.accountAandeel.deleteMany();
+      await prisma.aandeel.deleteMany();
+    });
+
+    it('should 200 and return the accountAandeel', async () => {
+      const response = await request.get(`${url}/2/aandelen/1`).set('Authorization', authHeader);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          aandeel: expect.objectContaining({
+            afkorting: 'CSPX',
+            id: 1,
+            isin: 'IE00B5BMR087',
+            kosten: 0.07,
+            rating: 5,
+            sustainability: 3,
+            type: 'Accumulatie',
+            uitgever: 'iShares',
+          }),
+          accountId: 2,
+          aandeelId: 1,
+          aantal: 5,
+          aankoopPrijs: 20,
+          reden: 'ik denk dat dit goed is.',
+          geschatteDuur: '5 jaar',
+        }),
+      );
+    });
+
+    it('should 200 and return the accountAandeel', async () => {
+      const response = await request.get(`${url}/me/aandelen/1`).set('Authorization', authHeader);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          aandeel: expect.objectContaining({
+            afkorting: 'CSPX',
+            id: 1,
+            isin: 'IE00B5BMR087',
+            kosten: 0.07,
+            rating: 5,
+            sustainability: 3,
+            type: 'Accumulatie',
+            uitgever: 'iShares',
+          }),
+          accountId: 2,
+          aandeelId: 1,
+          aantal: 5,
+          aankoopPrijs: 20,
+          reden: 'ik denk dat dit goed is.',
+          geschatteDuur: '5 jaar',
+        }),
+      );
+    });
+  });
+
+  describe('POST /api/accounts/:accountId/aandelen', () => {
+    beforeAll(async () => {
+      await prisma.aandeel.createMany({data: data.aandelen});
+    });
+
+    afterAll(async () => {
+      await prisma.accountAandeel.deleteMany();
+      await prisma.aandeel.deleteMany();
+    });
+
+    it('should 201 and return the created accountAandeel', async () => {
+      const response = await request.post(`${url}/2/aandelen`).set('Authorization', authHeader).send({
+        aandeelId: 2,
+        aantal: 10,
+        aankoopPrijs: 5,
+        reden: 'ik denk dat dit goed is.',
+        geschatteDuur: '5 jaar',
+      });
+    
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          aandeel: expect.objectContaining({
+            afkorting: 'IWDA',
+            id: 2,
+            isin: 'IE00B4L5Y983',
+            kosten: 0.2,
+            rating: 5,
+            sustainability: 2,
+            type: 'Accumulatie',
+            uitgever: 'iShares',
+          }),
+          accountId: 2,
+          aandeelId: 2,
+          aantal: 10,
+          aankoopPrijs: 5,
+          reden: 'ik denk dat dit goed is.',
+          geschatteDuur: '5 jaar',
+        }),
       );
     });
   });

@@ -27,7 +27,7 @@ model Account {
   email                 String    @unique(map: "idx_account_email_unique") @db.VarChar(255)
   hashedPassword        String    @db.VarChar(255)
   onbelegdVermogen      Float     @db.Float
-  rijksregisterNummer   Float     @db.Float
+  rijksregisterNummer   String    @db.VarChar(11)
   voornaam              String    @db.VarChar(100)
   achternaam            String    @db.VarChar(100)
   adresId               Int       @db.UnsignedInt

@@ -58,7 +58,7 @@ export default function AandeelForm({ account, saveAccount }) {
     mode: 'onBlur',
     defaultValues: {
       email: account?.email,
-      rijksregisterNummer: Number(account?.rijksregisterNummer),
+      rijksregisterNummer: account?.rijksregisterNummer,
       voornaam: account?.voornaam,
       achternaam: account?.achternaam,
       adres: {
@@ -80,11 +80,15 @@ export default function AandeelForm({ account, saveAccount }) {
       return;
     }
 
+    const updatedValues = {
+      ...values,
+      rijksregisterNummer: String(values.rijksregisterNummer),
+    };
+
     await saveAccount(
       {
         id: account?.id,
-        ...values,
-        rijksregisterNummer: Number(values.rijksregisterNummer),
+        ...updatedValues,
       },
       {
         throwOnError: false,

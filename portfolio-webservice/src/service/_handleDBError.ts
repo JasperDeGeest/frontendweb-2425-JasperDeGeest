@@ -1,4 +1,3 @@
-// src/service/_handleDBError.ts
 import ServiceError from '../core/serviceError';
 
 const handleDBError = (error: any) => {
@@ -53,7 +52,6 @@ const handleDBError = (error: any) => {
     }
   }
 
-  // Rethrow error because we don't know what happened
   throw error;
 };
 

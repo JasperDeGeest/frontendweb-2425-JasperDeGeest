@@ -1,4 +1,3 @@
-// src/rest/session.ts
 import Router from '@koa/router';
 import Joi from 'joi';
 import validate from '../core/validation';
@@ -10,7 +9,7 @@ import type {
   portfolioAppContext,
 } from '../types/koa';
 import type { LoginResponse, LoginRequest } from '../types/account';
-import { authDelay } from '../core/auth'; // 👈
+import { authDelay } from '../core/auth';
 
 /**
  * @api {post} /sessions Login
@@ -30,8 +29,7 @@ import { authDelay } from '../core/auth'; // 👈
  */
 const login = async (ctx: KoaContext<LoginResponse, void, LoginRequest>) => {
   const { email, password } = ctx.request.body;
-  const token = await accountService.login(email, password); // 👈 3
-
+  const token = await accountService.login(email, password);
   ctx.status = 200;
   ctx.body = { token };
 };
