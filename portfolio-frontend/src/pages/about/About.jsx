@@ -63,10 +63,6 @@ const About = () => (
           </Link>
         </ListItem>
       </List>
-
-      <Button as={RouterLink} to="/contact" colorScheme="teal" size="lg" mt={6}>
-        Neem contact met ons op
-      </Button>
     </VStack>
 
     <Divider my={6} />
