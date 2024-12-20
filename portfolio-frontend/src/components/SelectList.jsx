@@ -12,6 +12,7 @@ export default function SelectList({
   name,
   options,
   validationRules,
+  isDisabled,
   ...rest
 }) {
   const {
@@ -27,7 +28,7 @@ export default function SelectList({
       <Select
         {...register(name, validationRules)}
         id={name}
-        disabled={isSubmitting}
+        disabled={isDisabled || isSubmitting}
         {...rest}
       >
         {options.map((option, index) => (

@@ -277,6 +277,7 @@ updateAccountAandeel.validationScheme = {
     aandeelId: Joi.number().integer().positive(),
   },
   body: {
+    aandeelId: Joi.number().integer().positive(),
     aantal: Joi.number().integer().positive(),
     aankoopPrijs: Joi.number().positive(),
     reden: Joi.string(),

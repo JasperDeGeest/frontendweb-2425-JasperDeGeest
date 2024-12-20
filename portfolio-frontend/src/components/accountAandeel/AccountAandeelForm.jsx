@@ -80,7 +80,6 @@ export default function AandeelForm({ aandelen = [], accountAandeel = EMPTY_ACCO
       {
         id: accountAandeel?.aandeelId,
         ...values,
-        aandeelId: Number(values.aandeelId),
         aantal: Number(values.aantal),
         aankoopPrijs: Number(values.aankoopPrijs),
       },
@@ -114,7 +113,7 @@ export default function AandeelForm({ aandelen = [], accountAandeel = EMPTY_ACCO
                 label: aandeel.afkorting,
               }))}
               validationRules={validationRules.aandeelId}
-              isDisabled={!!accountAandeel?.aandeel?.id}
+              isDisabled={accountAandeel?.aandeel?.id ? true : false}
             />
             <NumberInput
               mb={4}
